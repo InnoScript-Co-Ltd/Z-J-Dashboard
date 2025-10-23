@@ -1,0 +1,49 @@
+body {
+    margin: 0px;
+}
+
+.p-password-input {
+ 	width: 100%!important;
+ }
+
+ .p-password {
+    display: inherit!important;
+ }
+
+ .link-text {
+    font-size: small;
+    color: #aaaae2;
+    cursor: pointer;
+ }
+
+ .p-toolbar {
+    border: 0px;
+    border-bottom: 1px solid #424242;
+    border-radius: 0px;
+ }
+
+ .error-message {
+   color: red;
+   font-size: small;
+ }
+
+.table-column {
+   font-size: small;
+}
+
+.img-circle, .img-circle > img {
+   width: 200px;
+   height: 200px;
+   border-radius: 50%!important;
+}
+
+.p-image  > img {
+   width: 100%!important;
+}
+
+.form-header {
+   font-size: large;
+   font-weight: bold;
+   margin-top: 15px;
+   margin-bottom: 15px;
+}
