@@ -6,7 +6,7 @@ axios.defaults.headers.common["Content-Type"] = "application/json";
 axios.defaults.headers.common["Accept"] = "application/json";
 
 const http = axios.create({
-  baseURL: `${baseURL}/v1/admin`,
+  baseURL: `${baseURL}/api/v1/admin`,
 });
 
 http.interceptors.request.use(
