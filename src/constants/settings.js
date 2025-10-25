@@ -12,7 +12,7 @@ const paginatorLeft = <Button type="button" icon="pi pi-refresh" text />;
 
 export const env = [
   "http://localhost:8000",
-  "http://api.evanglobalmanagement.com",
+  "http://159.223.36.159:8000",
 ];
 
 export const paginateOptions = {
