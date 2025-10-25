@@ -17,7 +17,7 @@ export const HeaderBar = () => {
 
     const init = useCallback( async () => {
         setLoading(true);
-        const requestResult = await getRequest(endpoints.admin, null, dispath);
+        const requestResult = await getRequest(endpoints.profile, null, dispath);
         setUser(requestResult.data);
         setLoading(false);
     }, [dispath]);
@@ -44,7 +44,7 @@ export const HeaderBar = () => {
                         <Image src="/logo192.png" alt="Image" width="40" height="40" className="mr-2" />
                         <div className="flex flex-column">
                             { user && <label> <b> {user.first_name + " " + user.last_name} </b> </label>}
-                            <small> Lottery Distribution Management System </small>
+                            <small> Z&J Thai Management System </small>
                         </div>
                     </>
                 )}

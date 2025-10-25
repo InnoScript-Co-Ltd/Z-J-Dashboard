@@ -1,11 +1,11 @@
 import { createBrowserRouter } from "react-router-dom";
-import { userRoutes } from "./modules/user/userRoutes";
+import { adminRoutes } from "./modules/admin/adminRoutes";
 import { dashboardRoutes } from "./modules/dashboard/dashboardRoutes";
 import { paths } from "./constants/path";
-import { Login } from "./modules/user/entry/Login";
-import { ForgetPassword } from "./modules/user/entry/ForgetPassword";
-import { VerifyCode } from "./modules/user/entry/VerifyCode";
-import { ResetPassword } from "./modules/user/entry/ResetPassword";
+import { Login } from "./modules/admin/entry/Login";
+import { ForgetPassword } from "./modules/admin/entry/ForgetPassword";
+import { VerifyCode } from "./modules/admin/entry/VerifyCode";
+import { ResetPassword } from "./modules/admin/entry/ResetPassword";
 import { Layout } from "./Layout";
 import { homeRoutes } from "./modules/home/homeRoutes";
 import { saleRoutes } from "./modules/sales/salueRoutes";
@@ -19,10 +19,10 @@ export const routers = createBrowserRouter([
         children: [
             ...homeRoutes,
             ...dashboardRoutes,
-            ...userRoutes,
             ...saleRoutes,
             ...customerRoutes,
-            ...resellerRoutes
+            ...resellerRoutes,
+            ...adminRoutes
         ]
     },
     {

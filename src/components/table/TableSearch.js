@@ -4,7 +4,7 @@ import { useState } from "react";
 
 export const TableSearch = ({ onSearch, placeholder, disabled }) => {
 
-    const [keyword, setKeyword] = useState(null);
+    const [keyword, setKeyword] = useState("");
 
     return (
         <div className="w-full p-inputgroup flex-1">
@@ -12,7 +12,7 @@ export const TableSearch = ({ onSearch, placeholder, disabled }) => {
                 size={"small"}
                 disabled={disabled}
                 placeholder={placeholder}
-                value={keyword ? keyword : ""}
+                value={keyword}
                 onChange={(e) => setKeyword(e.target.value)}
                 onKeyUp={(e) => {
                     if (e.key === "Enter") {
@@ -22,7 +22,7 @@ export const TableSearch = ({ onSearch, placeholder, disabled }) => {
             />
             <Button 
                 size="small"
-                icon="pi pi-search"
+                icon="pi pi-history"
                 onClick={(e) => {
                     onSearch(e.target.value);
                 }}

@@ -3,8 +3,10 @@ import { env } from "./settings";
 export const baseURL = env[0];
 
 export const endpoints = {
+  admin: "",
+  profile: "auth",
   customer: "user",
   login: "auth/login",
-  admin: "auth",
+  activity: "activities",
   image: `${baseURL}/storage/images`,
 };

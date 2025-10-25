@@ -9,5 +9,7 @@ export const paths = {
     CUSTOMERLIST: '/customer',
     CUSTOMER_CREATE: '/customer/create',
     RESELLER_LIST: '/reseller',
-    RESELLER_CREATE: '/reseller/create'
+    RESELLER_CREATE: '/reseller/create',
+    ADMIN_CREATE: '/admin/create',
+    ADMIN_LIST: '/admin'
 }

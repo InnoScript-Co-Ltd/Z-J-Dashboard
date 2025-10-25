@@ -44,16 +44,10 @@ export const features = [
         link: "/purchases"
     },
     {
-        name: "Employees",
+        name: "Administrator",
         icon: "pi pi-users",
         description: "Manage employee records and roles within the organization.",
-        link: "/employees"
-    },
-    {
-        name: "Reseller",
-        icon: "pi pi-user",
-        description: "Manage reseller accounts and permissions.",
-        link: paths.RESELLER_LIST
+        link: paths.ADMIN_LIST
     },
     {
         name: "Settings",

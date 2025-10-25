@@ -6,7 +6,7 @@ import { useNavigate } from "react-router-dom"
 import { paths } from "../../../constants/path"
 import { useEffect, useState } from "react"
 import { payloadHandler } from "../../../utilities/handlers"
-import { userPayloads } from "../userPayloads"
+import { adminPayloads } from "../adminPayloads"
 import { postRequest } from "../../../utilities/api"
 import { endpoints } from "../../../constants/endpoints"
 import { ValidationMessage } from "../../../components/ValidationMessage"
@@ -16,7 +16,7 @@ import { keys } from "../../../constants/settings"
 
 export const Login = () => {
 
-    const [payload, setPayload] = useState(userPayloads.login);
+    const [payload, setPayload] = useState(adminPayloads.login);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -46,7 +46,7 @@ export const Login = () => {
         <div className="flex align-items-center justify-content-center min-h-screen bg-gray-900">
             <Notification />
             <Card 
-                title="Thai Lottery Admin Control Panel" 
+                title="Z&J Thai" 
                 subTitle="Sign in to your account" 
                 className="w-full md:w-30rem"
             >

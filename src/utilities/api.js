@@ -79,7 +79,7 @@ export const putRequest = async (path, payload, dispatch) => {
  * @param {*} path
  * @returns
  */
-export const delRequest = async (path) => {
+export const delRequest = async (path, dispatch) => {
   try {
     const result = await http.delete(path);
     return httpResponseHandler(result);
