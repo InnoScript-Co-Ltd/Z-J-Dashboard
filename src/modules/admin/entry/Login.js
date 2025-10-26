@@ -28,7 +28,6 @@ export const Login = () => {
 
         if(requestResult.status === 200) {
             localStorage.setItem(keys.API_TOKEN, requestResult.data.access_token);
-            localStorage.setItem(keys.USER, JSON.stringify(requestResult.data.user));
             navigate(paths.HOME);
         }
         setLoading(false);

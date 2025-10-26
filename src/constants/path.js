@@ -11,5 +11,6 @@ export const paths = {
     RESELLER_LIST: '/reseller',
     RESELLER_CREATE: '/reseller/create',
     ADMIN_CREATE: '/admin/create',
-    ADMIN_LIST: '/admin'
+    ADMIN_LIST: '/admin',
+    PROFILE: "/profile",
 }

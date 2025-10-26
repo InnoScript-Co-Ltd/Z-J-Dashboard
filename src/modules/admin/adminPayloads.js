@@ -48,8 +48,10 @@ export const adminPayloads = {
         rows: paginateOptions.rows,
         columns: "id,name,action,created_at",
         search: "",
-        order:"id",
-        sort: "DESC"
+        order:"created_at",
+        sort: "ASC",
+        start_date: new Date().toLocaleDateString('en-CA'),
+        end_date: new Date().toLocaleDateString('en-CA'),
     },
     
     columns: [
@@ -74,10 +76,9 @@ export const adminPayloads = {
     ],
 
     activityColumns: [
-        { field: "name", header: "Name", sortable: false, show: true },
+        { field: "name", header: "Name", sortable: true, show: true },
         // { field: "description", header: "Description", sortable: false, show: true },
         { field: "action", header: "Action", sortable: true, show: true },
         { field: "created_at", header: "Log Time", sortable: true, show: true },
-        { field: "option", header: "Option", sortable: false, show: true },
     ],
 }

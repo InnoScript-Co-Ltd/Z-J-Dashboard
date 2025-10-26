@@ -1,5 +1,5 @@
 import { endpoints } from "../../constants/endpoints";
-import { delRequest, formBuilderRequest, getRequest, postRequest, putRequest } from "../../utilities/api";
+import { delRequest, getRequest, postRequest, putRequest } from "../../utilities/api";
 import { updateNotification } from "../shareSlice";
 import { activities, index, show } from "./adminSlice";
 
@@ -90,6 +90,26 @@ export const adminServices = {
     resetPassword: async (dispatch, id, password) => {
         const response = await putRequest(`${endpoints.admin}/${id}`, { password: password}, dispatch);
         return response;
-    }
+    },
 
+    profile: async (dispatch) => {
+        const response = await getRequest(endpoints.profile, {}, dispatch);
+        if(response.status === 200) {
+            dispatch(show(response.data));
+        }
+        return response;
+    },
+    
+    updateProfile: async (dispatch, payload) => {
+        const response = await putRequest(`${endpoints.profile}`, payload, dispatch);
+        if(response.status === 200) {
+            dispatch(show(response.data));
+        }
+        return response;
+    },
+
+    activitieRecordDelete: async (dispatch, payload) => {
+        const response = await postRequest(`${endpoints.activity}/delete/multiple`, payload, dispatch);  
+        return response;
+    }
 }

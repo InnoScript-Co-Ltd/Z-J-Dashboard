@@ -7,7 +7,6 @@ import { paths } from "../../../constants/path"
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect } from "react";
 import { adminServices } from "../adminService";
-import { AdminResetPassword } from "../entry/AdminResetPassword";
 import { AdminAccountDetail } from "./AdminAccountDetail";
 import { AdminActivity } from "./AdminActivity";
 

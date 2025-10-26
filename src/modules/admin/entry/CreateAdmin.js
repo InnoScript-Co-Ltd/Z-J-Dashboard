@@ -1,8 +1,6 @@
 import { Card } from "primereact/card";
-import { Notification } from "../../../components/Notification";
 import { InputText } from "primereact/inputtext";
 import { ValidationMessage } from "../../../components/ValidationMessage";
-import { Password } from "primereact/password";
 import { Button } from "primereact/button";
 import { adminPayloads } from "../adminPayloads";
 import { useDispatch } from "react-redux";

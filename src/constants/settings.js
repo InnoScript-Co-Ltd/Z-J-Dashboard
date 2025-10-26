@@ -36,55 +36,6 @@ export const keys = {
   LANGUAGE: "LANGUAGE",
 };
 
-// export const bankTypes = [
-//   {
-//     label: "AYA BANK",
-//     value: "aya_bank",
-//     icon: require("../assets/images/AyaBankLogo.png"),
-//   },
-//   {
-//     label: "CB BANK",
-//     value: "cb_bank",
-//     icon: require("../assets/images/CBBankLogo.png"),
-//   },
-//   {
-//     label: "UAB BANK",
-//     value: "uab_bank",
-//     icon: require("../assets/images/UABBankLogo.png"),
-//   },
-//   {
-//     label: "KBZ BANK SPECIAL ACC",
-//     value: "kbz_bank_special",
-//     icon: require("../assets/images/KBZBankLogo.png"),
-//   },
-//   {
-//     label: "A BANK",
-//     value: "a_bank",
-//     icon: require("../assets/images/ABankLogo.png"),
-//   },
-//   {
-//     label: "MCB BANK",
-//     value: "mcb_bank",
-//     icon: require("../assets/images/MCBBankLogo.png"),
-//   },
-
-//   {
-//     label: "YOMA (Flexi every day)",
-//     value: "yoma_bank_flexi",
-//     icon: require("../assets/images/YoMaBankLogo.png"),
-//   },
-//   {
-//     label: "YOMA (Flexi saving)",
-//     value: "yoma_bank_flexi_saving",
-//     icon: require("../assets/images/YoMaBankLogo.png"),
-//   },
-//   {
-//     label: "YOMA (Flexi acc)",
-//     value: "yoma_bank_flexi_acc",
-//     icon: require("../assets/images/YoMaBankLogo.png"),
-//   },
-// ];
-
 export const ReferralLinkType = {
   LEVEL_FOUR_REFERRAL: "LEVEL_FOUR_REFERRAL",
   CLIENT_REFERRAL: "CLIENT_REFERRAL",

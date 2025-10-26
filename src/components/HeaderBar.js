@@ -4,21 +4,24 @@ import { Skeleton } from 'primereact/skeleton';
 import { Image } from "primereact/image"
 import { Toolbar } from "primereact/toolbar"
 import { useCallback, useEffect, useState } from "react"
-import { getRequest } from "../utilities/api";
-import { endpoints } from "../constants/endpoints";
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
+import { useNavigate } from "react-router-dom";
+import { paths } from "../constants/path";
+import { adminServices } from "../modules/admin/adminService";
+import { keys } from "../constants/settings";
 
 export const HeaderBar = () => {
 
-    const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(false);
 
+    const { admin } = useSelector((state) => state.admin);
+
     const dispath = useDispatch();
+    const navigate = useNavigate();
 
     const init = useCallback( async () => {
         setLoading(true);
-        const requestResult = await getRequest(endpoints.profile, null, dispath);
-        setUser(requestResult.data);
+        await adminServices.profile(dispath);
         setLoading(false);
     }, [dispath]);
 
@@ -39,12 +42,12 @@ export const HeaderBar = () => {
                     </>
                 )}
 
-                { !loading && user && (
+                { !loading && admin && (
                     <>
                         <Image src="/logo192.png" alt="Image" width="40" height="40" className="mr-2" />
                         <div className="flex flex-column">
-                            { user && <label> <b> {user.first_name + " " + user.last_name} </b> </label>}
-                            <small> Z&J Thai Management System </small>
+                            { admin && <label> <b> {admin.first_name + " " + admin.last_name} </b> </label>}
+                            <small> Z&J Thai CRM Management System </small>
                         </div>
                     </>
                 )}
@@ -55,8 +58,11 @@ export const HeaderBar = () => {
     const EndContent = () => {
         return (
             <>
-                <Button icon="pi pi-user" rounded text aria-label="Profile" />
-                <Button icon="pi pi-cog" rounded text aria-label="Setting" />
+                <Button icon="pi pi-user" rounded text aria-label="Profile" onClick={() => navigate(paths.PROFILE)} />
+                <Button icon="pi pi-power-off" rounded text aria-label="Logout" onClick={() => {
+                    localStorage.removeItem(keys.API_TOKEN);
+                    navigate(paths.LOGIN);
+                }} />
             </>
 
         )
