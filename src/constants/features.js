@@ -8,40 +8,10 @@ export const features = [
         link: paths.DASHBOARD
     },
     {
-        name: "Sales",
-        icon: "pi pi-cart-plus",
-        description: "Manage and track your sales activities and performance.",
-        link: "/sales"
-    },
-    {
-        name: "Invoice",
-        icon: "pi pi-receipt",
-        description: "Create, send, and manage invoices for your customers.",
-        link: "/invoice"
-    },
-    {
-        name: "Customer",
-        icon: "pi pi-address-book",
-        description: "Manage customer information and interactions.",
-        link: "/customer"
-    },
-    {
-        name: "Reports",
-        icon: "pi pi-chart-bar",
-        description: "Generate and view detailed reports on various aspects of your business.",
-        link: "/reports"
-    },
-    {
-        name: "Inventory",
-        icon: "pi pi-warehouse",
-        description: "Monitor and manage your stock levels and product availability.",
-        link: "/inventory"
-    },
-    {
-        name: "Purchases",
-        icon: "pi pi-cart-arrow-down",
+        name: "Visa Services",
+        icon: "pi pi-book",
         description: "Handle purchase orders and supplier relationships.",
-        link: "/purchases"
+        link: paths.VISA_SERVICE_LIST
     },
     {
         name: "Administrator",

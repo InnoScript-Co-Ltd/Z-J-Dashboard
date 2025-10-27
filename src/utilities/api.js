@@ -48,7 +48,7 @@ export const postRequest = async (path, payload, dispatch) => {
  */
 export const formBuilderRequest = async (path, payload, dispatch) => {
   try {
-    const result = await http.put(path, payload, {
+    const result = await http.post(path, payload, {
       headers: {
         "Content-Type": "multipart/form-data",
       },

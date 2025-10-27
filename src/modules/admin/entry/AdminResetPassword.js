@@ -12,7 +12,6 @@ import { adminServices } from "../adminService";
 export const AdminResetPassword = () => {
 
     const [payload, setPayload] = useState(adminPayloads.changePassword);
-    const [show, setShow] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();

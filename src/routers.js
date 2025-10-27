@@ -9,8 +9,8 @@ import { ResetPassword } from "./modules/admin/entry/ResetPassword";
 import { Layout } from "./Layout";
 import { homeRoutes } from "./modules/home/homeRoutes";
 import { saleRoutes } from "./modules/sales/salueRoutes";
-import { customerRoutes } from "./modules/customer/customerRoutes";
 import { resellerRoutes } from "./modules/reseller/resellerRoutes";
+import { visaServiceRoutes } from "./modules/visaServices/visaServiceRoutes";
 
 export const routers = createBrowserRouter([
     {
@@ -20,9 +20,9 @@ export const routers = createBrowserRouter([
             ...homeRoutes,
             ...dashboardRoutes,
             ...saleRoutes,
-            ...customerRoutes,
             ...resellerRoutes,
-            ...adminRoutes
+            ...adminRoutes,
+            ...visaServiceRoutes
         ]
     },
     {

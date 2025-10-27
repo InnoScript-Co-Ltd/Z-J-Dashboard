@@ -1,10 +1,10 @@
 import { endpoints } from "../../constants/endpoints";
 import { formBuilderRequest, getRequest, putRequest } from "../../utilities/api";
-import { index, show } from "./customerSlice";
+import { index, show } from "./visaServiceSlice";
 
-export const customerServices = {
+export const visaServiceServices = {
     index: async (dispatch, params) => {
-        const response = await getRequest(endpoints.customer, params, dispatch);
+        const response = await getRequest(endpoints.visaService, params, dispatch);
         if(response.status === 200) {
             dispatch(index(response.data.data ? response.data.data : response.data));
         }
@@ -12,12 +12,12 @@ export const customerServices = {
     },
 
     store: async (dispatch, payload) => {
-        const response = await formBuilderRequest(endpoints.customer, payload, dispatch);
+        const response = await formBuilderRequest(endpoints.visaService, payload, dispatch);
         return response;
     },
 
     show: async (dispatch , id) => {
-        const response = await getRequest(`${endpoints.customer}/${id}`, null, dispatch);
+        const response = await getRequest(`${endpoints.visaService}/${id}`, null, dispatch);
         if(response.status === 200) {
             dispatch(show(response.data));
         }
@@ -25,16 +25,10 @@ export const customerServices = {
     },
 
     update: async (dispatch, id, payload) => {
-        const response = await putRequest(`${endpoints.customer}/${id}`, payload, dispatch);
+        const response = await putRequest(`${endpoints.visaService}/${id}`, payload, dispatch);
         if(response.status === 200) {
             dispatch(show(response.data));
         }
         return response;
     },
-
-    resetPassword: async (dispatch, id, password) => {
-        const response = await putRequest(`${endpoints.customer}/${id}`, { password: password}, dispatch);
-        return response;
-    }
-
 }

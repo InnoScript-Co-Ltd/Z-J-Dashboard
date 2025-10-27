@@ -60,6 +60,11 @@ export const statusOptions = [
   { status: "DISABLE", color: "danger" },
   { status: "DELETED", color: "danger" },
   { status: "PENDING", color: "warning" },
+  { status: "PROCESSING", color: "primary" },
+  { status: "UNDER_CHECKING", color: "warning" },
+  { status: "APPOINTMENT_CONFIRMED", color: "danger" },
+  { status: "ACCOMPLISHED", color: "success" },
+
 ];
 
 export const tooltipOptions = {

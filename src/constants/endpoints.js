@@ -9,4 +9,5 @@ export const endpoints = {
   login: "auth/login",
   activity: "activities",
   image: `${baseURL}/storage/images`,
+  visaService: "visa-services",
 };
