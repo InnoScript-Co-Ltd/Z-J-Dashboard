@@ -4,21 +4,20 @@ import { HeaderBar } from "../../../components/HeaderBar"
 import { BackButton } from "../../../components/BackButton"
 import { useNavigate, useParams } from "react-router-dom"
 import { paths } from "../../../constants/path"
-import { UpdateReseller } from "../entry/UpdateReseller";
 import { useDispatch } from "react-redux";
 import { useCallback, useEffect } from "react";
-import { resellerServices } from "../resellerServices";
-import { ResetPassword } from "../entry/ResetPassword";
-import { Divider } from 'primereact/divider';
+import { adminServices } from "../adminService";
+import { AdminAccountDetail } from "./AdminAccountDetail";
+import { AdminActivity } from "./AdminActivity";
 
-export const ResellerDetail = () => {
+export const AdminDetail = () => {
 
     const navigate = useNavigate();
     const params = useParams();
     const dispatch = useDispatch();
 
     const init = useCallback( async () => {
-        await resellerServices.show(dispatch, params.id);
+        await adminServices.show(dispatch, params.id);
     }, [dispatch, params]);
 
     useEffect(() => {
@@ -35,23 +34,22 @@ export const ResellerDetail = () => {
                 <div className="flex flex-row justify-content-start align-items-center">
                     <Button 
                         size="small"
-                        label="Create Reseller Account"
+                        label="Create Admin Account"
                         icon="pi pi-plus-circle"
-                        onClick={() => navigate(paths.RESELLER_CREATE)}
+                        onClick={() => navigate(paths.ADMIN_CREATE)}
                     />
                 </div>
             </div>
 
             <div className="w-full p-3">
                 <TabView>
-                    <TabPanel header="Reseller Account Information">
-                        <UpdateReseller />
-                        <Divider />
-                        <ResetPassword />
+                    <TabPanel header="Account Information">
+                        <AdminAccountDetail />
                     </TabPanel>
 
-                    <TabPanel header="Tickets"></TabPanel>
-                    <TabPanel header="Customers"></TabPanel>
+                    <TabPanel header="Actvity Logs">
+                        <AdminActivity />
+                    </TabPanel>
                 </TabView>
             </div>
         </>

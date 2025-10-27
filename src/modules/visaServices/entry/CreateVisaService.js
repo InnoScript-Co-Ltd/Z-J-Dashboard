@@ -13,7 +13,6 @@ import { BackButton } from "../../../components/BackButton";
 import { visaServicePayloads } from "../visaServicePayload"
 import { Calendar } from "primereact/calendar"
 import { visaServiceServices } from "../visaServiceServices"
-import moment from "moment";
 
 export const CreateVisaService = () => {
 

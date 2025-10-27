@@ -1,34 +1,30 @@
 import { Button } from "primereact/button"
-import { Card } from "primereact/card"
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
-import { HeaderBar } from "../../../components/HeaderBar"
-import { useNavigate } from "react-router-dom"
-import { paths } from "../../../constants/path"
+import { paths } from "../../../constants/path";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useCallback, useEffect, useRef, useState } from "react";
-import { resellerServices } from "../resellerServices";
 import { useDispatch, useSelector } from "react-redux";
-import { resellerPayloads } from "../resellerPayload";
 import { paginateOptions } from "../../../constants/settings";
 import { ColumnStatus } from "../../../components/table/ColumnStatus";
 import { ColumnNavigate } from "../../../components/table/ColumnNavigate";
 import { ColumnDate } from "../../../components/table/ColumnDate";
 import { Paginator } from "primereact/paginator";
-import { setPaginate } from "../resellerSlice";
 import { TableSearch } from "../../../components/table/TableSearch";
-import { BackButton } from "../../../components/BackButton";
+import { setPaginate } from "../customerSlice";
+import { customerPayloads } from "../customerPayloads";
+import { customerServices } from "../customerService";
 
-export const ResellerList = () => {
+export const ConfirmCustomerList = () => {
 
     const [loading, setLoading] = useState(false);
-    const { resellers, paginateParams } = useSelector(state => state.reseller);
+    const { customers, paginateParams } = useSelector(state => state.customer);
 
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
     const first = useRef(0);
     const total = useRef(0);
-    const columns = useRef(resellerPayloads.columns);
+    const columns = useRef(customerPayloads.columns);
     const showColumns = useRef(columns.current.filter(col => col.show === true));
 
     const onPageChange = async (event) => {
@@ -60,12 +56,30 @@ export const ResellerList = () => {
 
     const init = useCallback(async () => {
         setLoading(true);
-        const response = await resellerServices.index(dispatch, paginateParams);
+        dispatch(setPaginate(paginateParams));
+        const response = await customerServices.index(dispatch, {...paginateParams, search: ""});
         if (response.status === 200) {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
         setLoading(false);
     }, [dispatch, paginateParams]);
+
+    const restoreDialogBox = async (id) => {
+        confirmDialog({
+            message: 'Do you want to restore this record?',
+            header: 'Restore Confirmation',
+            icon: 'pi pi-info-circle',
+            defaultFocus: 'reject',
+            acceptClassName: 'p-button-danger',
+            accept: async () => { 
+                const response = await customerServices.restore(dispatch, id);
+                if(response.status === 200) {
+                    init();
+                }
+            },
+            reject: ()  => {}
+        });
+    };
 
     useEffect(() => {
         init();
@@ -73,7 +87,7 @@ export const ResellerList = () => {
 
     const FooterRender = () => {
         return (
-            <div className=' flex items-center justify-content-between'>
+            <div className='flex items-center justify-content-between'>
                 <div> Total - <span>{total ? total.current : 0}</span></div>
                 <div className=' flex align-items-center gap-3'>
                     <Button
@@ -81,7 +95,7 @@ export const ResellerList = () => {
                         icon="pi pi-refresh"
                         size="small"
                         onClick={() => {
-                            dispatch(setPaginate(resellerPayloads.paginateParams));
+                            dispatch(setPaginate(customerServices.paginateParams));
                         }}
                     />
                 </div>
@@ -94,8 +108,8 @@ export const ResellerList = () => {
             <div className="grid">
                 <div className="col-3">
                     <TableSearch
-                        tooltipLabel={resellerPayloads.columns}
-                        placeholder={"Search Reseller Account"}
+                        tooltipLabel={customerPayloads.columns}
+                        placeholder={"Search Customer"}
                         onSearch={(e) => onSearchChange(e)}
                     />
                 </div>
@@ -103,39 +117,20 @@ export const ResellerList = () => {
         )
     }
 
-
     return (
         <>
-            <HeaderBar />
-
-            <div className="w-full flex flex-row justify-content-between align-items-center mt-3 p-3">
-                <BackButton />
-                
-                <div className="flex flex-row justify-content-start align-items-center">
-                    <Button 
-                        size="small"
-                        label="Create Reseller Account"
-                        icon="pi pi-plus-circle"
-                        onClick={() => navigate(paths.RESELLER_CREATE)}
-                    />
-                </div>
-            </div>
-
+            <ConfirmDialog />
             <div className="w-full p-3">
-                <Card
-                    title="Reseller List"
-                    subTitle="Overview of all resellers with contact, sales, and performance information."
-                >
                     <DataTable
                         dataKey="id"
                         size="small"
-                        value={resellers}
+                        value={customers}
                         sortField={paginateParams.order}
                         sortOrder={paginateParams.sort === 'DESC' ? 1 : paginateParams.sort === 'ASC' ? -1 : 0}
                         onSort={onSort}
                         loading={loading}
-                        emptyMessage="No reseller found."
-                        globalFilterFields={resellerPayloads.columns}
+                        emptyMessage="No customer found."
+                        globalFilterFields={customerPayloads.columns}
                         sortMode={paginateOptions.sortMode}
                         header={<HeaderRender />}
                         footer={<FooterRender />}
@@ -148,17 +143,30 @@ export const ResellerList = () => {
                                     style={{ minWidth: "250px" }}
                                     field={col.field}
                                     header={col.header}
-                                    sortable
+                                    sortable={col.sortable}
                                     body={(value) => {
                                         switch (col.field) {
                                             case "name":
-                                                return (<ColumnNavigate url={`${paths.RESELLER_LIST}/${value['id']}`} value={`${value.first_name + " " + value.last_name}`} />);
+                                                return (<ColumnNavigate url={`${paths.CUSTOMER_LIST}/${value['id']}`} value={value[col.field]} />);
                                             case "status":
                                                 return <ColumnStatus status={value[col.field]} />;
                                             case "created_at":
                                                 return (<ColumnDate value={value[col.field]} />);
                                             case "updated_at":
-                                                return (<ColumnDate value={value[col.field]} />)
+                                                return (<ColumnDate value={value[col.field]} />);
+                                            case 'deleted_at':
+                                                return (<ColumnDate value={value[col.field]} />);
+                                            case "option":
+                                                return (
+                                                    <Button
+                                                        outlined
+                                                        size="small"
+                                                        label="Restore"
+                                                        severity="success"
+                                                        icon="pi pi-check"
+                                                        onClick={async () => restoreDialogBox(value['id'])}
+                                                    />
+                                                );
                                             default:
                                                 return value[col.field];
                                         }
@@ -177,7 +185,6 @@ export const ResellerList = () => {
                         currentPageReportTemplate="Total - {totalRecords} | {currentPage} of {totalPages}"
                         onPageChange={onPageChange}
                     />
-                </Card>
             </div>
         </>
     )

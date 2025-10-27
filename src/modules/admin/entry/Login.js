@@ -72,7 +72,8 @@ export const Login = () => {
                             setPayload(updatePayload);
                         })}
                         onKeyDown={(e) => {
-                            if(e === "Enter") {
+                            if(e.key === 'Enter') {
+                                e.preventDefault();
                                 loginHandler();
                             }
                         }}

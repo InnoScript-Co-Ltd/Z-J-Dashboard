@@ -1,14 +1,14 @@
 import { configureStore } from '@reduxjs/toolkit';
 import shareSlice from "./modules/shareSlice";
-import resellerSlice from "./modules/reseller/resellerSlice";
 import visaServiceSlice from "./modules/visaServices/visaServiceSlice";
 import adminSlice from "./modules/admin/adminSlice";
+import customerSlice from "./modules/customer/customerSlice"
 
 export const store = configureStore({
     reducer: {
         share: shareSlice,
-        reseller: resellerSlice,
         visaService: visaServiceSlice,
-        admin: adminSlice
+        admin: adminSlice,
+        customer: customerSlice
     },
 });

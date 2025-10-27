@@ -6,7 +6,7 @@ export const paths = {
     HOME: "/home",
     DASHBOARD: "/dashboard",
     SALES: "/sales",
-    CUSTOMERLIST: '/customer',
+    CUSTOMER_LIST: '/customer',
     CUSTOMER_CREATE: '/customer/create',
     RESELLER_LIST: '/reseller',
     RESELLER_CREATE: '/reseller/create',

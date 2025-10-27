@@ -1,5 +1,5 @@
 import { endpoints } from "../../constants/endpoints";
-import { formBuilderRequest, getRequest, putRequest } from "../../utilities/api";
+import { formBuilderRequest, getRequest } from "../../utilities/api";
 import { index, show } from "./visaServiceSlice";
 
 export const visaServiceServices = {

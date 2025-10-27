@@ -8,6 +8,12 @@ export const features = [
         link: paths.DASHBOARD
     },
     {
+        name: "Customer",
+        icon: "pi pi-user",
+        description: "Handle purchase orders and supplier relationships.",
+        link: paths.CUSTOMER_LIST
+    },
+    {
         name: "Visa Services",
         icon: "pi pi-book",
         description: "Handle purchase orders and supplier relationships.",

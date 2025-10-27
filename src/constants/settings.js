@@ -64,6 +64,9 @@ export const statusOptions = [
   { status: "UNDER_CHECKING", color: "warning" },
   { status: "APPOINTMENT_CONFIRMED", color: "danger" },
   { status: "ACCOMPLISHED", color: "success" },
+  { status: "CONFIRMED", color: "success" },
+  { status: "STILL", color: "warning" },
+  { status: "CANCEL", color: "danger" },
 
 ];
 

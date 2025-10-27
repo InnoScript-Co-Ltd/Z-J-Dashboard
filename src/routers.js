@@ -8,9 +8,8 @@ import { VerifyCode } from "./modules/admin/entry/VerifyCode";
 import { ResetPassword } from "./modules/admin/entry/ResetPassword";
 import { Layout } from "./Layout";
 import { homeRoutes } from "./modules/home/homeRoutes";
-import { saleRoutes } from "./modules/sales/salueRoutes";
-import { resellerRoutes } from "./modules/reseller/resellerRoutes";
 import { visaServiceRoutes } from "./modules/visaServices/visaServiceRoutes";
+import { customerRoutes } from "./modules/customer/customerRoutes";
 
 export const routers = createBrowserRouter([
     {
@@ -19,10 +18,9 @@ export const routers = createBrowserRouter([
         children: [
             ...homeRoutes,
             ...dashboardRoutes,
-            ...saleRoutes,
-            ...resellerRoutes,
             ...adminRoutes,
-            ...visaServiceRoutes
+            ...visaServiceRoutes,
+            ...customerRoutes
         ]
     },
     {
