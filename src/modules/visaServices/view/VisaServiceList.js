@@ -151,7 +151,7 @@ export const VisaServiceList = () => {
                         optionLabel="name"
                         value={visaType}
                         onChange={ (e) => {
-                            setServiceType(e.value);
+                            setVisaType(e.value);
 
                             let updatePaginate = {...paginateParams};
                             updatePaginate.filter = "visa_type";

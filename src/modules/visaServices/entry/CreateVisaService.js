@@ -13,11 +13,13 @@ import { BackButton } from "../../../components/BackButton";
 import { visaServicePayloads } from "../visaServicePayload"
 import { Calendar } from "primereact/calendar"
 import { visaServiceServices } from "../visaServiceServices"
+import moment from "moment";
 
 export const CreateVisaService = () => {
 
-    const [payload, setPayload] = useState(visaServicePayloads.create);
+    const [payload, setPayload] = useState(visaServicePayloads.createOrUpdate);
     const [passportImage, setPassportImage] = useState("");
+    const [addDate, setAddDate] = useState(60);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
@@ -125,6 +127,16 @@ export const CreateVisaService = () => {
                                     value={payload.visa_type}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "visa_type", (updatePayload) => {
+
+                                        if(e.value.code === "W.W14") {
+                                            setAddDate(14);
+                                        }
+
+                                        if(e.value.code === "TR30") {
+                                            setAddDate(60);
+                                        }
+                                        updatePayload.visa_entry_date = "";
+                                        updatePayload.visa_expiry_date = "";
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -141,6 +153,9 @@ export const CreateVisaService = () => {
                                     value={payload.visa_entry_date}
                                     showIcon
                                     onChange={(e) => payloadHandler(payload, e.target.value, "visa_entry_date", (updatePayload) => {
+                                        const newDate = new Date(e.target.value);
+                                        newDate.setDate(e.target.value.getDate() + addDate);
+                                        updatePayload.visa_expiry_date = newDate;
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -153,12 +168,9 @@ export const CreateVisaService = () => {
                                 <Calendar 
                                     className="w-full"
                                     placeholder="Enter Visa Expired Date"
-                                    disabled={loading}
+                                    disabled={true}
                                     value={payload.visa_expiry_date}
                                     showIcon
-                                    onChange={(e) => payloadHandler(payload, e.target.value, "visa_expiry_date", (updatePayload) => {
-                                        setPayload(updatePayload);
-                                    })}
                                 />
                             </div>
                             <ValidationMessage field="visa_expiry_date" />

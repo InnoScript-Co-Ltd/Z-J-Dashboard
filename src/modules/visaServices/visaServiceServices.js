@@ -25,7 +25,7 @@ export const visaServiceServices = {
     },
 
     update: async (dispatch, id, payload) => {
-        const response = await putRequest(`${endpoints.visaService}/${id}`, payload, dispatch);
+        const response = await formBuilderRequest(`${endpoints.visaService}/${id}`, payload, dispatch);
         if(response.status === 200) {
             dispatch(show(response.data));
         }

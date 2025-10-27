@@ -3,7 +3,7 @@ import { paginateOptions } from "../../constants/settings";
 export const visaServicePayloads = {
     visaTypes: [
         { code: "TR30", name: "TR30" },
-        { code: "W14", name: "W14" },
+        { code: "W.W14", name: "W.W14" },
     ],
 
     serviceTypes: [
@@ -19,7 +19,7 @@ export const visaServicePayloads = {
         { code: "ACCOMPLISHED", name: "ACCOMPLISHED" },
     ],
 
-    create: {
+    createOrUpdate: {
         name: "",
         passport: "",
         passport_image: "",

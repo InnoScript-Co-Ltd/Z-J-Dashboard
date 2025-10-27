@@ -71,6 +71,11 @@ export const Login = () => {
                         onChange={(e) => payloadHandler(payload, e.target.value, 'password', (updatePayload) => {
                             setPayload(updatePayload);
                         })}
+                        onKeyDown={(e) => {
+                            if(e === "Enter") {
+                                loginHandler();
+                            }
+                        }}
                     />
                     <ValidationMessage field={"password"} />
                 </div>

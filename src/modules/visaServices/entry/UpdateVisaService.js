@@ -2,10 +2,10 @@ import { Card } from "primereact/card"
 import { HeaderBar } from "../../../components/HeaderBar"
 import { InputText } from "primereact/inputtext"
 import { Button } from "primereact/button"
-import { useState } from "react"
-import { useNavigate } from "react-router-dom"
+import { useCallback, useEffect, useState } from "react"
+import { useNavigate, useParams } from "react-router-dom"
 import { payloadHandler } from "../../../utilities/handlers"
-import { useDispatch } from "react-redux"
+import { useDispatch, useSelector } from "react-redux"
 import { ValidationMessage } from "../../../components/ValidationMessage"
 import { Dropdown } from "primereact/dropdown"
 import { updateError } from "../../shareSlice"
@@ -13,17 +13,25 @@ import { BackButton } from "../../../components/BackButton";
 import { visaServicePayloads } from "../visaServicePayload"
 import { Calendar } from "primereact/calendar"
 import { visaServiceServices } from "../visaServiceServices"
+import { paths } from "../../../constants/path"
+import { Image } from "primereact/image"
+import { endpoints } from "../../../constants/endpoints"
+import defaultImage from "../../../assets/images/default.webp";
 
 export const UpdateVisaService = () => {
 
-    const [payload, setPayload] = useState(visaServicePayloads.create);
+    const { visaService } = useSelector(state => state.visaService);
+
+    const [payload, setPayload] = useState(visaServicePayloads.createOrUpdate);
     const [passportImage, setPassportImage] = useState("");
+    const [addDate, setAddDate] = useState(60);
     const [loading, setLoading] = useState(false);
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
+    const params = useParams();
 
-    const createVisaServiceHandler = async () => {
+    const updateVisaServiceHandler = async () => {
         setLoading(true);
 
         let requestPayload = {...payload};
@@ -31,28 +39,76 @@ export const UpdateVisaService = () => {
         requestPayload.service_type = payload.service_type.code;
         requestPayload.status = payload.status.code;
 
-        const requestResult = await visaServiceServices.store(dispatch, requestPayload);
+        const requestResult = await visaServiceServices.update(dispatch, params.id, requestPayload);
 
         if(requestResult.status === 200) {
             dispatch(updateError(null));
-            navigate(-1);
         }
         
         setLoading(false);
     }
 
+    const init = useCallback(async () => {
+        setLoading(true);
+        await visaServiceServices.show(dispatch, params.id);
+        setLoading(false);
+    }, [dispatch, params]);
+
+    useEffect(() => {
+        init();
+    }, [init]);
+
+    useEffect(() => {
+        if(visaService) {
+            let updatePayload = { ...visaService };
+            updatePayload.passport_image = null;
+            updatePayload.visa_type = visaServicePayloads.visaTypes.filter(v => v.code === visaService.visa_type)[0];
+            updatePayload.service_type = visaServicePayloads.serviceTypes.filter(v => v.code === visaService.service_type)[0];
+            updatePayload.status = visaServicePayloads.statusTypes.filter(v => v.code === visaService.status)[0];
+            updatePayload.visa_entry_date = visaService.visa_entry_date ? new Date(visaService.visa_entry_date) : "";
+            updatePayload.visa_expiry_date = visaService.visa_expiry_date ? new Date(visaService.visa_expiry_date) : "";
+            updatePayload.appointment_date = visaService.appointment_date ? new Date(visaService.appointment_date) : "";
+            updatePayload.new_visa_expired_date = visaService.new_visa_expired_date ? new Date(visaService.new_visa_expired_date) : "";
+            setPayload(updatePayload);
+        }
+    }, [visaService])
+
     return(
         <>
             <HeaderBar />
-            
-            <div className="w-full mt-3 p-3">
-                <BackButton />
 
+            <div className="w-full flex flex-row justify-content-between align-items-center mt-3 p-3">
+                <BackButton />
+                
+                <div className="flex flex-row justify-content-start align-items-center">
+                    <Button 
+                        size="small"
+                        label="Create Visa Service"
+                        icon="pi pi-plus-circle"
+                        onClick={() => navigate(paths.VISA_SERVICE_CREATE)}
+                    />
+                </div>
+            </div>
+
+            <div className="grid grid-nogutter mt-3 p-3">
                 <Card 
                     className="mt-3"
-                    title="Create Visa Service"
+                    title="Update Visa Service"
                 >
                     <div className="grid">
+                        <div className="col-3 flex flex-row align-items-center justify-content-center">
+                            <Image 
+                                src={visaService ? `${endpoints.image}/${visaService.passport_image}` : defaultImage}
+                                preview
+                                width={300}
+                                height={300}
+                                style={{ objectFit: "cover", borderRadius: "4px" }}
+                            />
+                        </div>
+
+                        <div className="col-9">
+                            <div className="grid">
+
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
                                 <InputText 
@@ -125,6 +181,16 @@ export const UpdateVisaService = () => {
                                     value={payload.visa_type}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "visa_type", (updatePayload) => {
+
+                                        if(e.value.code === "W.W14") {
+                                            setAddDate(14);
+                                        }
+
+                                        if(e.value.code === "TR30") {
+                                            setAddDate(60);
+                                        }
+                                        updatePayload.visa_entry_date = "";
+                                        updatePayload.visa_expiry_date = "";
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -141,6 +207,9 @@ export const UpdateVisaService = () => {
                                     value={payload.visa_entry_date}
                                     showIcon
                                     onChange={(e) => payloadHandler(payload, e.target.value, "visa_entry_date", (updatePayload) => {
+                                        const newDate = new Date(e.target.value);
+                                        newDate.setDate(e.target.value.getDate() + addDate);
+                                        updatePayload.visa_expiry_date = newDate;
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -153,12 +222,9 @@ export const UpdateVisaService = () => {
                                 <Calendar 
                                     className="w-full"
                                     placeholder="Enter Visa Expired Date"
-                                    disabled={loading}
+                                    disabled={true}
                                     value={payload.visa_expiry_date}
                                     showIcon
-                                    onChange={(e) => payloadHandler(payload, e.target.value, "visa_expiry_date", (updatePayload) => {
-                                        setPayload(updatePayload);
-                                    })}
                                 />
                             </div>
                             <ValidationMessage field="visa_expiry_date" />
@@ -215,11 +281,13 @@ export const UpdateVisaService = () => {
                         <div className="col-12 md:col-12 mt-3">
                             <Button 
                                 size="small"
-                                label="Create"
+                                label="Update"
                                 disabled={loading}
                                 loading={loading}
-                                onClick={() => createVisaServiceHandler() }
+                                onClick={() => updateVisaServiceHandler() }
                             />
+                        </div>
+                            </div>
                         </div>
                     </div>
                 </Card>
