@@ -2,7 +2,7 @@ import { Button } from "primereact/button"
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
 import { paths } from "../../../constants/path";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
+import { ConfirmDialog } from 'primereact/confirmdialog';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { paginateOptions } from "../../../constants/settings";
@@ -11,75 +11,56 @@ import { ColumnNavigate } from "../../../components/table/ColumnNavigate";
 import { ColumnDate } from "../../../components/table/ColumnDate";
 import { Paginator } from "primereact/paginator";
 import { TableSearch } from "../../../components/table/TableSearch";
-import { setPaginate } from "../customerSlice";
-import { customerPayloads } from "../customerPayloads";
-import { customerServices } from "../customerService";
+import { settingPayloads } from "../settingPayloads";
+import { setServicePaginate } from "../serviceSlice";
+import { settingServices } from "../settingServices";
 
-export const ConfirmCustomerList = () => {
+export const ServiceList = () => {
 
     const [loading, setLoading] = useState(false);
-    const { customers, paginateParams } = useSelector(state => state.customer);
+    const { services, servicePaginateParams } = useSelector(state => state.setting);
 
     const dispatch = useDispatch();
 
     const first = useRef(0);
     const total = useRef(0);
-    const columns = useRef(customerPayloads.columns);
+    const columns = useRef(settingPayloads.serviceColumns);
     const showColumns = useRef(columns.current.filter(col => col.show === true));
 
     const onPageChange = async (event) => {
-        first.current = event.page * paginateParams.rows;
-        dispatch(
-            setPaginate({
-                ...paginateParams,
-                page: event?.page + 1,
-                rows: event?.rows,
-            })
-        );
+        first.current = event.page * servicePaginateParams.rows;
+        dispatch(setServicePaginate({
+            ...servicePaginateParams,
+            page: event?.page + 1,
+            rows: event?.rows,
+        }));
     }
 
     const onSort = (event) => {
         const sortOrder = event.sortOrder === 1 ? "DESC" : "ASC";
-        dispatch(setPaginate({
-            ...paginateParams,
+        dispatch(setServicePaginate({
+            ...servicePaginateParams,
             sort: sortOrder,
             order: event.sortField
         }));
     }
 
     const onSearchChange = (event) => {
-        dispatch(setPaginate({
-            ...paginateParams,
+        dispatch(setServicePaginate({
+            ...servicePaginateParams,
             search: event,
         }));
     }
 
     const init = useCallback(async () => {
         setLoading(true);
-        dispatch(setPaginate(paginateParams));
-        const response = await customerServices.index(dispatch, {...paginateParams, search: ""});
+        dispatch(setServicePaginate(servicePaginateParams));
+        const response = await settingServices.serviceIndex(dispatch, {...servicePaginateParams, search: ""});
         if (response.status === 200) {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
         setLoading(false);
-    }, [dispatch, paginateParams]);
-
-    const restoreDialogBox = async (id) => {
-        confirmDialog({
-            message: 'Do you want to restore this record?',
-            header: 'Restore Confirmation',
-            icon: 'pi pi-info-circle',
-            defaultFocus: 'reject',
-            acceptClassName: 'p-button-danger',
-            accept: async () => { 
-                const response = await customerServices.restore(dispatch, id);
-                if(response.status === 200) {
-                    init();
-                }
-            },
-            reject: ()  => {}
-        });
-    };
+    }, [dispatch, servicePaginateParams]);
 
     useEffect(() => {
         init();
@@ -95,7 +76,7 @@ export const ConfirmCustomerList = () => {
                         icon="pi pi-refresh"
                         size="small"
                         onClick={() => {
-                            dispatch(setPaginate(customerServices.paginateParams));
+                            dispatch(setServicePaginate(settingServices.servicePaginateParams));
                         }}
                     />
                 </div>
@@ -108,8 +89,8 @@ export const ConfirmCustomerList = () => {
             <div className="grid">
                 <div className="col-3">
                     <TableSearch
-                        tooltipLabel={customerPayloads.columns}
-                        placeholder={"Search Customer"}
+                        tooltipLabel={settingPayloads.serviceColumns}
+                        placeholder={"Search Service"}
                         onSearch={(e) => onSearchChange(e)}
                     />
                 </div>
@@ -121,21 +102,21 @@ export const ConfirmCustomerList = () => {
         <>
             <ConfirmDialog />
             <div className="w-full p-3">
-                    <DataTable
-                        dataKey="id"
+                <DataTable
+                    dataKey="id"
                         size="small"
-                        value={customers}
-                        sortField={paginateParams.order}
-                        sortOrder={paginateParams.sort === 'DESC' ? 1 : paginateParams.sort === 'ASC' ? -1 : 0}
+                        value={services}
+                        sortField={servicePaginateParams.order}
+                        sortOrder={servicePaginateParams.sort === 'DESC' ? 1 : servicePaginateParams.sort === 'ASC' ? -1 : 0}
                         onSort={onSort}
                         loading={loading}
-                        emptyMessage="No customer found."
-                        globalFilterFields={customerPayloads.columns}
+                        emptyMessage="No service found."
+                        globalFilterFields={settingPayloads.serviceColumns}
                         sortMode={paginateOptions.sortMode}
                         header={<HeaderRender />}
-                        footer={<FooterRender />}
-                    >
-                        {showColumns.current.map((col) => {
+                    footer={<FooterRender />}
+                >
+                    {showColumns.current.map((col) => {
                             return (
                                 <Column
                                     className="table-column"
@@ -147,44 +128,31 @@ export const ConfirmCustomerList = () => {
                                     body={(value) => {
                                         switch (col.field) {
                                             case "name":
-                                                return (<ColumnNavigate url={`${paths.CUSTOMER_LIST}/${value['id']}`} value={value[col.field]} />);
+                                                return (<ColumnNavigate url={`${paths.SETTING}/service/${value['id']}`} value={value[col.field]} />);
                                             case "status":
                                                 return <ColumnStatus status={value[col.field]} />;
                                             case "created_at":
                                                 return (<ColumnDate value={value[col.field]} />);
                                             case "updated_at":
                                                 return (<ColumnDate value={value[col.field]} />);
-                                            case 'dob':
-                                                return (<ColumnDate value={value[col.field]} />);
-                                            case "option":
-                                                return (
-                                                    <Button
-                                                        outlined
-                                                        size="small"
-                                                        label="Restore"
-                                                        severity="success"
-                                                        icon="pi pi-check"
-                                                        onClick={async () => restoreDialogBox(value['id'])}
-                                                    />
-                                                );
                                             default:
                                                 return value[col.field];
                                         }
                                     }}
                                 />
                             )
-                        })}
-                    </DataTable>
+                    })}
+                </DataTable>
 
-                    <Paginator
-                        first={first.current}
-                        rows={paginateParams.rows}
-                        totalRecords={total.current}
-                        rowsPerPageOptions={paginateOptions?.rowsPerPageOptions}
-                        template={"FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"}
-                        currentPageReportTemplate="Total - {totalRecords} | {currentPage} of {totalPages}"
-                        onPageChange={onPageChange}
-                    />
+                <Paginator
+                    first={first.current}
+                    rows={servicePaginateParams.rows}
+                    totalRecords={total.current}
+                    rowsPerPageOptions={paginateOptions?.rowsPerPageOptions}
+                    template={"FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"}
+                    currentPageReportTemplate="Total - {totalRecords} | {currentPage} of {totalPages}"
+                    onPageChange={onPageChange}
+                />
             </div>
         </>
     )

@@ -15,4 +15,5 @@ export const paths = {
     PROFILE: "/profile",
     VISA_SERVICE_LIST: '/visa-services',
     VISA_SERVICE_CREATE: '/visa-services/create',
+    SETTING: "/setting"
 }

@@ -33,7 +33,7 @@ export const CreateCustomer = () => {
         setLoading(true);
         let updatePayload = {...payload};
         updatePayload.employer = payload.employer.code;
-        updatePayload.content_by = payload.content_by.code;
+        updatePayload.contact_by = payload.contact_by.code;
         updatePayload.status = payload.status.code;
         updatePayload.employer_type = payload.employer_type.code;
         updatePayload.fees = 3000;
@@ -237,14 +237,14 @@ export const CreateCustomer = () => {
                                     className="w-full mt-1"
                                     placeholder="Enter Contact By"
                                     options={customerPayloads.contactByTypes}
-                                    value={payload.content_by}
+                                    value={payload.contact_by}
                                     optionLabel="name"
-                                    onChange={(e) => payloadHandler(payload, e.value, "content_by", (updatePayload) => {
+                                    onChange={(e) => payloadHandler(payload, e.value, "contact_by", (updatePayload) => {
                                         setPayload(updatePayload);
                                     })}
                                 />
                             </div>
-                            <ValidationMessage field="content_by" />
+                            <ValidationMessage field="contact_by" />
                         </div>
 
                         <div className="col-3 md:col-3 mt-3">
@@ -424,6 +424,23 @@ export const CreateCustomer = () => {
                         <div className="col-12">
                             <Divider />
                             <h3> Service Fee </h3>
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Choose Year Of Insurance </label>
+                                <Dropdown
+                                    className="w-full mt-1"
+                                    placeholder="Choose Year Of Insurance"
+                                    options={customerPayloads.yearOfInsurances}
+                                    value={payload.year_of_insurance}
+                                    optionLabel="name"
+                                    onChange={(e) => payloadHandler(payload, e.value, "year_of_insurance", (updatePayload) => {
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="year_of_insurance" />
                         </div>
 
                         <div className="col-12 md:col-3 mt-3">

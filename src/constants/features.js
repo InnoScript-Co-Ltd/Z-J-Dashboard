@@ -2,12 +2,6 @@ import { paths } from "./path";
 
 export const features = [
     {
-        name: "Dashboard",
-        icon: "pi pi-desktop",
-        description: "View key metrics and performance indicators at a glance.",
-        link: paths.DASHBOARD
-    },
-    {
         name: "Customer",
         icon: "pi pi-user",
         description: "Handle purchase orders and supplier relationships.",
@@ -29,6 +23,6 @@ export const features = [
         name: "Settings",
         icon: "pi pi-cog",
         description: "Configure application settings and preferences.",
-        link: "/settings"
+        link: paths.SETTING
     }
 ]

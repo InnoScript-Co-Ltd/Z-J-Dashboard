@@ -1,6 +1,6 @@
 import { paginateOptions } from "../../constants/settings";
 
-export const customerPayloads = {
+export const settingPayloads = {
     createOrUpdate: {
         name: "",
         photo: "",
@@ -64,34 +64,19 @@ export const customerPayloads = {
         { code: "1 Year", name: "1 Year" },
     ],
 
-    paginateParams: {
+    servicePaginateParams: {
         page: 1,
         rows: paginateOptions.rows,
-        columns: "id,first_name,last_name,phone,email,status",
+        columns: "id,name,status",
         search: "",
         order:"id",
         sort: "DESC"
     },
 
-    columns: [
+    serviceColumns: [
         { field: "name", header: "Name", sortable: true, show: true },
-        { field: "nrc", header: "Nrc", sortable: true, show: true },
-        { field: "passport", header: "Passport", sortable: true, show: true },
-        { field: "dob", header: "DOB", sortable: true, show: true },
-        { field: "phone", header: "Phone", sortable: true, show: true },
-        { field: "email", header: "Email", sortable: true, show: true },
-        { field: "content_by", header: "Contact By", sortable: true, show: true },
-        { field: "social_app", header: "Social App", sortable: true, show: true },
-        { field: "remark", header: "Remark", sortable: true, show: true },
+        { field: "description", header: "Description", sortable: true, show: true },
         { field: "status", header: "Status", sortable: true, show: true },
-        { field: "year_of_insurance", header: "Year Of Insurance", sortable: true, show: true },
-        { field: "fees", header: "fees", sortable: true, show: true },
-        { field: "deposit_amount", header: "Deposit Amount", sortable: true, show: true },
-        { field: "balance", header: "Balance", sortable: true, show: true },
-        { field: "pink_card", header: "Pink Card", sortable: true, show: true },
-        { field: "employer", header: "Employer", sortable: true, show: true },
-        { field: "employer_type", header: "Employer Type", sortable: true, show: true },
-        { field: "employer_company_data", header: "Company Data", sortable: true, show: true },
         { field: "created_at", header: "Created At", sortable: true, show: true },
         { field: "updated_at", header: "Updated At", sortable: true, show: true },
     ],
