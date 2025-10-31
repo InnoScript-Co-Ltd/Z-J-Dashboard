@@ -1,5 +1,6 @@
 import { paths } from "../../constants/path";
 import { CreateCustomer } from "./entry/CreateCustomer";
+import { UpdateCustomer } from "./entry/UpdateCustomer";
 import { CustomerList } from "./view/CustomerList";
 
 export const customerRoutes = [
@@ -13,8 +14,8 @@ export const customerRoutes = [
         element: <CreateCustomer />
     }, 
 
-    // {
-    //     path: `${paths.CUSTOMER_LIST}/:id`,
-    //     element: <AdminDetail />
-    // },
+    {
+        path: `${paths.CUSTOMER_LIST}/:id`,
+        element: <UpdateCustomer />
+    },
 ]

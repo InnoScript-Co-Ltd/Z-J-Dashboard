@@ -12,8 +12,9 @@ import { ColumnDate } from "../../../components/table/ColumnDate";
 import { Paginator } from "primereact/paginator";
 import { TableSearch } from "../../../components/table/TableSearch";
 import { settingPayloads } from "../settingPayloads";
-import { setServicePaginate } from "../serviceSlice";
+import { setServicePaginate } from "../settingSlice";
 import { settingServices } from "../settingServices";
+import numeral from "numeral";
 
 export const ServiceList = () => {
 
@@ -55,7 +56,7 @@ export const ServiceList = () => {
     const init = useCallback(async () => {
         setLoading(true);
         dispatch(setServicePaginate(servicePaginateParams));
-        const response = await settingServices.serviceIndex(dispatch, {...servicePaginateParams, search: ""});
+        const response = await settingServices.serviceIndex(dispatch, servicePaginateParams);
         if (response.status === 200) {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
@@ -127,8 +128,10 @@ export const ServiceList = () => {
                                     sortable={col.sortable}
                                     body={(value) => {
                                         switch (col.field) {
-                                            case "name":
+                                            case "service_type":
                                                 return (<ColumnNavigate url={`${paths.SETTING}/service/${value['id']}`} value={value[col.field]} />);
+                                            case "fees":
+                                                return (<span> {numeral(value[col.field]).format("0,0")} Baht </span>)
                                             case "status":
                                                 return <ColumnStatus status={value[col.field]} />;
                                             case "created_at":

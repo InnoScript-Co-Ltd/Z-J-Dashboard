@@ -1,6 +1,6 @@
 import { endpoints } from "../../constants/endpoints";
-import { getRequest, postRequest } from "../../utilities/api";
-import { serviceIndex } from "./serviceSlice";
+import { getRequest, postRequest, putRequest } from "../../utilities/api";
+import { serviceIndex, serviceUpdate } from "./settingSlice";
 
 export const settingServices = {
     serviceIndex: async (dispatch, params) => {
@@ -15,11 +15,14 @@ export const settingServices = {
         return await postRequest(endpoints.service, payload, dispatch);
     },
 
-    serviceUpdate: async (dispatch) => {
-        return await postRequest(endpoints.service, dispatch);
+    serviceUpdate: async (dispatch, payload, id) => {
+        return await putRequest(`${endpoints.service}/${id}`, payload, dispatch);
     },
 
     serviceShow: async (dispatch, id) => {
-        return await getRequest(`${endpoints.service}/${id}`, {}, dispatch);
+        const response = await getRequest(`${endpoints.service}/${id}`, {}, dispatch);
+        if(response.status === 200) {
+            dispatch(serviceUpdate(response.data));
+        }
     }
 }

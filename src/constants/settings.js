@@ -67,6 +67,12 @@ export const statusOptions = [
   { status: "CONFIRMED", color: "success" },
   { status: "STILL", color: "warning" },
   { status: "CANCEL", color: "danger" },
+  { status: "PINK_CARD_HOLDER", color: "primary" },
+  { status: "NO_PINK_CARD", color: "primary" },
+  { status: "EMPLOYER", color: "success" },
+  { status: "HIRE_EMPLOYER", color: "success" },
+  { status: "NORMAL", color: "info" },
+  { status: "COMPANY", color: "info" } 
 
 ];
 

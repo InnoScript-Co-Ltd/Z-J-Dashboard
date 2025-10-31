@@ -2,9 +2,9 @@ import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { ValidationMessage } from "../../../components/ValidationMessage";
 import { Button } from "primereact/button";
-import { useDispatch } from "react-redux";
-import { useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { useParams } from "react-router-dom";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { payloadHandler } from "../../../utilities/handlers";
 import { HeaderBar } from "../../../components/HeaderBar";
 import { BackButton } from "../../../components/BackButton";
@@ -14,13 +14,18 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { Divider } from "primereact/divider";
 import { settingServices } from "../../setting/settingServices";
-import { setServicePaginate } from "../../setting/settingSlice";
+import { Image } from "primereact/image";
+import { endpoints } from "../../../constants/endpoints";
+import defaultImage from "../../../assets/images/default.webp";
+import { updateError } from "../../shareSlice";
 
-export const CreateCustomer = () => {
+export const UpdateCustomer = () => {
+
+    const { customer } = useSelector(state => state.customer);
+    const { services } = useSelector(state => state.setting);
 
     const [payload, setPayload] = useState(customerPayloads.createOrUpdate);
     const [loading, setLoading] = useState(false);
-    const [services, setService] = useState([]);
 
     const [photo, setPhoto] = useState("");
     const [nrcFront, setNrcFront] = useState("");
@@ -30,10 +35,12 @@ export const CreateCustomer = () => {
     const [employerPhoto, setEmployerPhoto] = useState("");
     const [employerHouseHoldPhoto, setEmployerHouseholdPhoto] = useState("");
 
-    const navigate = useNavigate();
     const dispatch = useDispatch();
+    const params = useParams();
 
-    const createCustomerHandler = async () => {
+    const serviceList = useRef([]);
+
+    const updateCustomerHandler = async () => {
         setLoading(true);
         let updatePayload = {...payload};
         updatePayload.employer = payload.employer.code;
@@ -42,32 +49,65 @@ export const CreateCustomer = () => {
         updatePayload.employer_type = payload.employer_type.code;
         updatePayload.year_of_insurance = payload.year_of_insurance.code;
 
-        const response = await customerServices.store(dispatch, updatePayload);
+        updatePayload.photo = updatePayload.photo === "" ? null : updatePayload.photo;
+        updatePayload.nrc_front = updatePayload.nrc_front === "" ? null : updatePayload.nrc_front;
+        updatePayload.nrc_back = updatePayload.nrc_back === "" ? null : updatePayload.nrc_back;
+        updatePayload.passport_photo = updatePayload.passport_photo === "" ? null : updatePayload.passport_photo;
+        updatePayload.employer_photo = updatePayload.employer_photo === "" ? null : updatePayload.employer_photo;
+        updatePayload.employer_household_photo = updatePayload.employer_household_photo === "" ? null : updatePayload.employer_household_photo;
+        updatePayload.social_link_qrcode = updatePayload.social_link_qrcode === "" ? null : updatePayload.social_link_qrcode;
+
+        const response = await customerServices.update(dispatch, params.id, updatePayload);
+
         if(response.status === 200) {
-            navigate(-1);
+            dispatch(updateError(null))
         }
         setLoading(false);
     }
 
     const init = useCallback(async() => {
         setLoading(true);
-        const response = await settingServices.serviceIndex(dispatch, { ...setServicePaginate, filter: "status", value: "ACTIVE"});
-        if(response.status === 200) {
-            let updateServices = response.data.map((value) => {
+        await settingServices.serviceIndex(dispatch, {filter: "status", value: "ACTIVE"});
+        await customerServices.show(dispatch, params.id);
+        setLoading(false);
+    }, [dispatch, params]);
+
+    useEffect(() => {
+        init();
+    }, [init]);
+
+    useEffect(() => {
+        if(customer && services) {
+            let updatePayload = {...customer};
+
+            serviceList.current = services.map((value) => {
                 return {
                     code: value.service_type,
                     name: value.service_type,
                     fees: value.fees
                 }
             });
-            setService(updateServices);
-        }
-        setLoading(false);
-    }, [dispatch]);
 
-    useEffect(() => {
-        init();
-    }, [init]);
+            updatePayload.year_of_insurance = customer.year_of_insurance ? serviceList.current.filter(value => value.code === customer.year_of_insurance)[0] : "";
+            updatePayload.status = customer.status ? customerPayloads.status.filter(value => value.code === customer.status)[0] : "";
+            updatePayload.employer = customer.employer ? customerPayloads.employer.filter(value => value.code === customer.employer)[0] : "";
+            updatePayload.employer_type = customer.employer_type ? customerPayloads.employerTypes.filter(value => value.code === customer.employer_type)[0] : "";
+            updatePayload.contact_by = customer.contact_by ? customerPayloads.contactByTypes.filter(value => value.code === customer.contact_by)[0] : "";
+            updatePayload.dob = new Date(customer.dob);
+
+            updatePayload.photo = "";
+            updatePayload.nrc_front = "";
+            updatePayload.nrc_back = "";
+            updatePayload.passport_photo = "";
+            updatePayload.employer_photo = "";
+            updatePayload.socail_link_qrcode = "";
+            updatePayload.employer_household_photo = "";
+            updatePayload.social_link_qrcode = "";
+
+            setPayload(updatePayload);
+        }
+    }, [customer, services]);
+
     return (
         <>
             <HeaderBar /> 
@@ -77,12 +117,77 @@ export const CreateCustomer = () => {
 
                 <Card 
                     className="mt-3"
-                    title="Create Customer"
+                    title="Update Customer"
                 >
                     <div className="grid">
                         <div className="col-12">
                             <h3> Personal Information </h3>
                         </div>
+
+                        <div className="col-3 mt-3">
+                            <label> Customer Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.photo ? `${endpoints.image}/${customer.photo}` : defaultImage}
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> NRC Front Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.nrc_front ? `${endpoints.image}/${customer.nrc_front}` : defaultImage}
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> NRC Back Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.nrc_back ? `${endpoints.image}/${customer.nrc_back}` : defaultImage }
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> Passport Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.passport_photo ? `${endpoints.image}/${customer.passport_photo}` : defaultImage }
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> Social Link Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.social_link_qrcode ? `${endpoints.image}/${customer.social_link_qrcode}` : defaultImage }
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> Employer Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.employer_photo ? `${endpoints.image}/${customer.employer_photo}` : defaultImage }
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3">
+                            <label> Employer Household Photo </label>
+                            <Image 
+                                className="customer-update-image mt-1"
+                                src={customer && customer.employer_household_photo ? `${endpoints.image}/${customer.employer_household_photo}` : defaultImage }
+                                preview
+                            />
+                        </div>
+
+                        <div className="col-3 mt-3"></div>
 
                         <div className="col-3 md:col-3">
                             <div className="w-full mt-3">
@@ -450,20 +555,22 @@ export const CreateCustomer = () => {
                         </div>
 
                         <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Choose Year Of Insurance </label>
-                                <Dropdown
-                                    className="w-full mt-1"
-                                    placeholder="Choose Year Of Insurance"
-                                    options={services}
-                                    value={payload.year_of_insurance}
-                                    optionLabel="name"
-                                    onChange={(e) => payloadHandler(payload, e.value, "year_of_insurance", (updatePayload) => {
-                                        updatePayload.fees = e.value.fees;
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
+                            { services && services.length > 0 && (
+                                <div className="w-full">
+                                    <label> Choose Year Of Insurance </label>
+                                    <Dropdown
+                                        className="w-full mt-1"
+                                        placeholder="Choose Year Of Insurance"
+                                        options={serviceList.current}
+                                        value={payload.year_of_insurance}
+                                        optionLabel="name"
+                                        onChange={(e) => payloadHandler(payload, e.value, "year_of_insurance", (updatePayload) => {
+                                            updatePayload.fees = e.value.fees;
+                                            setPayload(updatePayload);
+                                        })}
+                                    />
+                                </div>
+                            )}
                             <ValidationMessage field="year_of_insurance" />
                         </div>
 
@@ -517,10 +624,10 @@ export const CreateCustomer = () => {
                         <div className="col-12 md:col-12 mt-3">
                             <Button 
                                 size="small"
-                                label="Create"
+                                label="Update"
                                 disabled={loading}
                                 loading={loading}
-                                onClick={() => createCustomerHandler() }
+                                onClick={() => updateCustomerHandler() }
                             />
                         </div>
                     </div>

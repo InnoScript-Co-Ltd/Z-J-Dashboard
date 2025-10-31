@@ -18,8 +18,8 @@ export const AdminActivity = () => {
 
     const [loading, setLoading] = useState(false);
     const [selectedRows, setSelectedRows] = useState(null);
-    const [startDate, setStartDate] = useState(new Date);
-    const [endDate, setEndDate] = useState(new Date);
+    const [startDate, setStartDate] = useState(new Date());
+    const [endDate, setEndDate] = useState(new Date());
 
     const { activities, activityPaginateParams } = useSelector(state => state.admin);
 
@@ -73,7 +73,7 @@ export const AdminActivity = () => {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
         setLoading(false);
-    }, [dispatch, activityPaginateParams,]);
+    }, [dispatch, activityPaginateParams, params]);
 
     const multipleDeleteDialogBox = async (id) => {
         confirmDialog({

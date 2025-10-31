@@ -1,8 +1,8 @@
 import { Button } from "primereact/button"
 import { DataTable } from 'primereact/datatable';
 import { Column } from 'primereact/column';
+import { ColumnNumber } from "../../../components/table/ColumnNumber";
 import { paths } from "../../../constants/path";
-import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { paginateOptions } from "../../../constants/settings";
@@ -14,11 +14,20 @@ import { TableSearch } from "../../../components/table/TableSearch";
 import { setPaginate } from "../customerSlice";
 import { customerPayloads } from "../customerPayloads";
 import { customerServices } from "../customerService";
+import { Dropdown } from "primereact/dropdown";
+import moment from "moment";
 
 export const ConfirmCustomerList = () => {
 
-    const [loading, setLoading] = useState(false);
     const { customers, paginateParams } = useSelector(state => state.customer);
+    const { services } = useSelector(state => state.setting);
+
+    const [loading, setLoading] = useState(false);
+    const [employer, setEmployer] = useState("");
+    const [employerType, setEmployerType] = useState("");
+    const [pinkCard, setPinkCard] = useState("");
+    const [contactBy, setContactBy] = useState("");
+    const [status, setStatus] = useState("");
 
     const dispatch = useDispatch();
 
@@ -26,6 +35,7 @@ export const ConfirmCustomerList = () => {
     const total = useRef(0);
     const columns = useRef(customerPayloads.columns);
     const showColumns = useRef(columns.current.filter(col => col.show === true));
+    const serviceTypes = useRef([]);
 
     const onPageChange = async (event) => {
         first.current = event.page * paginateParams.rows;
@@ -56,34 +66,27 @@ export const ConfirmCustomerList = () => {
 
     const init = useCallback(async () => {
         setLoading(true);
-        dispatch(setPaginate(paginateParams));
-        const response = await customerServices.index(dispatch, {...paginateParams, search: ""});
+        const response = await customerServices.index(dispatch, paginateParams);
         if (response.status === 200) {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
         setLoading(false);
     }, [dispatch, paginateParams]);
 
-    const restoreDialogBox = async (id) => {
-        confirmDialog({
-            message: 'Do you want to restore this record?',
-            header: 'Restore Confirmation',
-            icon: 'pi pi-info-circle',
-            defaultFocus: 'reject',
-            acceptClassName: 'p-button-danger',
-            accept: async () => { 
-                const response = await customerServices.restore(dispatch, id);
-                if(response.status === 200) {
-                    init();
-                }
-            },
-            reject: ()  => {}
-        });
-    };
-
     useEffect(() => {
         init();
-    }, [init])
+    }, [init]);
+
+    useEffect(() => {
+        if(services) {
+            serviceTypes.current = services.map((value) => {
+                return {
+                    code: value.service_type,
+                    name: value.service_type
+                }
+            })
+        }
+    }, [services]);
 
     const FooterRender = () => {
         return (
@@ -95,7 +98,7 @@ export const ConfirmCustomerList = () => {
                         icon="pi pi-refresh"
                         size="small"
                         onClick={() => {
-                            dispatch(setPaginate(customerServices.paginateParams));
+                            dispatch(setPaginate(customerPayloads.paginateParams));
                         }}
                     />
                 </div>
@@ -105,13 +108,114 @@ export const ConfirmCustomerList = () => {
 
     const HeaderRender = () => {
         return (
-            <div className="grid">
-                <div className="col-3">
+            <div className="mb-3">
+                <div className="col-3 mr-3">
+                    <label> Search Customer </label>
                     <TableSearch
                         tooltipLabel={customerPayloads.columns}
                         placeholder={"Search Customer"}
                         onSearch={(e) => onSearchChange(e)}
                     />
+                </div>
+                
+                <div className="w-full flex flex-row align-items-center justify-content-start">
+                    <div className="mt-3 mr-3">
+                        <label> Filter By Employeer</label>
+                        <Dropdown
+                            className="w-full mt-1"
+                            placeholder="Choose Employeer"
+                            options={customerPayloads.employer}
+                            value={employer}
+                            optionLabel="name"
+                            onChange={(e) => {
+                                setEmployer(e.value);
+                                dispatch(setPaginate({
+                                    ...paginateParams,
+                                    filter: "employer",
+                                    value: e.value.code
+                                }))
+                            }}
+                        />
+                    </div>
+
+                    <div className="mt-3 mr-3">
+                        <label> Filter By Employer Type </label>
+                        <Dropdown
+                            className="w-full mt-1"
+                            placeholder="Choose Employer Type"
+                            options={customerPayloads.employerTypes}
+                            value={employerType}
+                            optionLabel="name"
+                            onChange={(e) => {
+                                setEmployerType(e.value);
+                                dispatch(setPaginate({
+                                    ...paginateParams,
+                                    filter: "employer_type",
+                                    value: e.value.code
+                                }))
+                            }}
+                        />
+                    </div>
+
+                    <div className="mt-3 mr-3">
+                        <label> Pink Card </label>
+                        <Dropdown
+                            className="w-full mt-1"
+                            placeholder="Choose Pink Card Type"
+                            options={[
+                                {code: "PINK_CARD_HOLDER", name: "PINK_CARD_HOLDER" },
+                                { code: "NO_PINK_CARD", name: "NO_PINK_CARD" }
+                            ]}
+                            value={pinkCard}
+                            optionLabel="name"
+                            onChange={(e) => {
+                                setPinkCard(e.value);
+                                dispatch(setPaginate({
+                                    ...paginateParams,
+                                    filter: "pink_card",
+                                    value: e.value.code
+                                }))
+                            }}
+                        />
+                    </div>
+
+                    <div className="mt-3 mr-3">
+                        <label> Contact By </label>
+                        <Dropdown
+                            className="w-full mt-1"
+                            placeholder="Choose Contact By"
+                            options={customerPayloads.contactByTypes}
+                            value={contactBy}
+                            optionLabel="name"
+                            onChange={(e) => {
+                                setContactBy(e.value);
+                                dispatch(setPaginate({
+                                    ...paginateParams,
+                                    filter: "contact_by",
+                                    value: e.value.code
+                                }));
+                            }}
+                        />
+                    </div>
+
+                    <div className="mt-3 mr-3">
+                        <label> Status </label>
+                        <Dropdown
+                            className="w-full mt-1"
+                            placeholder="Choose Status"
+                            options={customerPayloads.status}
+                            value={status}
+                            optionLabel="name"
+                            onChange={(e) => {
+                                setStatus(e.value);
+                                dispatch(setPaginate({
+                                    ...paginateParams,
+                                    filter: "status",
+                                    value: e.value.code
+                                }));
+                            }}
+                        />
+                    </div>
                 </div>
             </div>
         )
@@ -119,7 +223,6 @@ export const ConfirmCustomerList = () => {
 
     return (
         <>
-            <ConfirmDialog />
             <div className="w-full p-3">
                     <DataTable
                         dataKey="id"
@@ -155,18 +258,19 @@ export const ConfirmCustomerList = () => {
                                             case "updated_at":
                                                 return (<ColumnDate value={value[col.field]} />);
                                             case 'dob':
-                                                return (<ColumnDate value={value[col.field]} />);
-                                            case "option":
-                                                return (
-                                                    <Button
-                                                        outlined
-                                                        size="small"
-                                                        label="Restore"
-                                                        severity="success"
-                                                        icon="pi pi-check"
-                                                        onClick={async () => restoreDialogBox(value['id'])}
-                                                    />
-                                                );
+                                                return ( moment(value[col.field]).format("DD-MM-YYYY"));
+                                            case 'fees':
+                                                return (<ColumnNumber value={value[col.field]} />);
+                                            case 'balance':
+                                                return (<ColumnNumber value={value[col.field]} />);
+                                            case 'deposit_amount':
+                                                return (<ColumnNumber value={value[col.field]} />);
+                                            case 'pink_card':
+                                                return (<ColumnStatus status={value[col.field]} />);
+                                            case 'employer':
+                                                return (<ColumnStatus status={value[col.field]} />);
+                                            case 'employer_type':
+                                                return (<ColumnStatus status={value[col.field]} />);
                                             default:
                                                 return value[col.field];
                                         }

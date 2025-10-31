@@ -2,6 +2,7 @@ import { TabPanel, TabView } from "primereact/tabview"
 import { BackButton } from "../../../components/BackButton"
 import { HeaderBar } from "../../../components/HeaderBar"
 import { ServiceList } from "./ServiceList"
+import { CreateService } from "../entry/CreateService"
 
 export const Setting = () => {
 
@@ -16,6 +17,7 @@ export const Setting = () => {
             <div className="w-full p-3">
                 <TabView>
                     <TabPanel header="Service">
+                        <CreateService />
                         <ServiceList />
                     </TabPanel>
                 </TabView>

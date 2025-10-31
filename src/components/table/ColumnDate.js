@@ -1,8 +1,8 @@
-import dayjs from "dayjs";
+import moment from "moment";
 
 export const ColumnDate = ({value}) => {
 
     return(
-        <span> { new Date(value).toLocaleDateString('en-CA')} </span>
+        <span> { moment(value).format("DD-MM-YYYY hh:mm:ss A")} </span>
     )
 }
