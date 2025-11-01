@@ -271,6 +271,8 @@ export const ConfirmCustomerList = () => {
                                                 return (<ColumnStatus status={value[col.field]} />);
                                             case 'employer_type':
                                                 return (<ColumnStatus status={value[col.field]} />);
+                                            case 'employer_company_data':
+                                                return (<a href={value[col.field]} target="blank"> View Company Data </a>)
                                             default:
                                                 return value[col.field];
                                         }

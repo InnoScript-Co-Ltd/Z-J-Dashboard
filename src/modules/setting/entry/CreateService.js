@@ -18,12 +18,16 @@ export const CreateService = () => {
 
     const createServiceHandler = async () => {
         setLoading(true);
+
         let updatePayload = {...payload};
         updatePayload.service_type = payload.service_type.code;
+
         const response = await settingServices.serviceStore(dispatch, updatePayload);
+
         if(response.status === 200) {
             await settingServices.serviceIndex(dispatch, settingPayloads.servicePaginateParams);
         }
+
         setLoading(false);
     }
 

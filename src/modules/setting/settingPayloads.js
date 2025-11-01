@@ -9,10 +9,10 @@ export const settingPayloads = {
     },
 
     yearOfInsurances: [
-        { code: "6 Months (Pink Card)", name: "6 Months (Pink Card)" },
-        { code: "1 Year (Pink Card)", name: "1 Year (Pink Card)" },
-        { code: "6 Months (Non Pink Card)", name: "6 Months (Non Pink Card)" },
-        { code: "1 Year (Non Pink Card)", name: "1 Year (Non Pink Card)" },
+        { code: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ ၁ နှစ်", name: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ ၁ နှစ်" , keyword: "PINK_CARD_ONE_YEAR_INSURANCE"},
+        { code: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ 6 လ", name: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ 6 လ", keyword: "PINK_CARD_SIX_MONTHS_INSURANCE" },
+        { code: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ ၁ နှစ်", name: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ ၁ နှစ်", keyword: "NO_PINK_CARD_ONE_YEAR_INSURANCE" },
+        { code: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ 6 လ", name: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ 6 လ", keyword: "NO_PINK_CARD_SIX_MONTHS_INSURANCE" },
     ],
 
     servicePaginateParams: {

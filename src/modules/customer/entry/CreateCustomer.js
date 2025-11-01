@@ -14,7 +14,6 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { Divider } from "primereact/divider";
 import { settingServices } from "../../setting/settingServices";
-import { setServicePaginate } from "../../setting/settingSlice";
 
 export const CreateCustomer = () => {
 
@@ -51,7 +50,7 @@ export const CreateCustomer = () => {
 
     const init = useCallback(async() => {
         setLoading(true);
-        const response = await settingServices.serviceIndex(dispatch, { ...setServicePaginate, filter: "status", value: "ACTIVE"});
+        const response = await settingServices.serviceIndex(dispatch, { filter: "status", value: "ACTIVE"});
         if(response.status === 200) {
             let updateServices = response.data.map((value) => {
                 return {
@@ -455,7 +454,7 @@ export const CreateCustomer = () => {
                                 <Dropdown
                                     className="w-full mt-1"
                                     placeholder="Choose Year Of Insurance"
-                                    options={services}
+                                    options={services ? services : []}
                                     value={payload.year_of_insurance}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "year_of_insurance", (updatePayload) => {
