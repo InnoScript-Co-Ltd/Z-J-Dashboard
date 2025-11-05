@@ -117,9 +117,16 @@ export const thumbnailTemplate = (item) => {
   );
 };
 
+export const generalStatusEnum = [
+  { name: "ACTIVE", code: "ACTIVE" },
+  { name: "PENDING", code: "PENDING" },
+  { name: "DISABLE", code: "DISABLE" }
+];
+
 /**
  * Language / Region / Country
  */
+
 export const countries = [
   { name: "China", code: "CN" },
   { name: "Myanmar", code: "MM" },

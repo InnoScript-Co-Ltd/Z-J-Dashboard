@@ -1,6 +1,6 @@
 import { endpoints } from "../../constants/endpoints";
 import { getRequest, postRequest, putRequest } from "../../utilities/api";
-import { serviceIndex, serviceUpdate } from "./settingSlice";
+import { categoryIndex, categoryUpdate, serviceIndex, serviceUpdate } from "./settingSlice";
 
 export const settingServices = {
     serviceIndex: async (dispatch, params) => {
@@ -24,5 +24,30 @@ export const settingServices = {
         if(response.status === 200) {
             dispatch(serviceUpdate(response.data));
         }
-    }
+        return response;
+    },
+
+    categoryIndex: async (dispatch, params) => {
+        const response = await getRequest(endpoints.categories, params, dispatch);
+        if(response.status === 200) {
+            dispatch(categoryIndex(response.data.data ? response.data.data : response.data));
+        }
+        return response;
+    },
+
+    categoryStore : async (dispatch, payload) => {
+        return postRequest(endpoints.categories, payload, dispatch);
+    },
+
+    categoryUpdate: async (dispatch, payload, id) => {
+        return await putRequest(`${endpoints.categories}/${id}`, payload, dispatch);
+    },
+
+    categoryShow: async (dispatch, id) => {
+        const response = await getRequest(`${endpoints.categories}/${id}`, {}, dispatch);
+        if(response.status === 200) {
+            dispatch(categoryUpdate(response.data));
+        }
+        return response;
+    },
 }

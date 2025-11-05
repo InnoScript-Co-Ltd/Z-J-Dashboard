@@ -12,26 +12,25 @@ import { ColumnDate } from "../../../components/table/ColumnDate";
 import { Paginator } from "primereact/paginator";
 import { TableSearch } from "../../../components/table/TableSearch";
 import { settingPayloads } from "../settingPayloads";
-import { setServicePaginate } from "../settingSlice";
+import { setCategoryPaginate } from "../settingSlice";
 import { settingServices } from "../settingServices";
-import numeral from "numeral";
 
-export const ServiceList = () => {
+export const CategoryList = () => {
 
     const [loading, setLoading] = useState(false);
-    const { services, servicePaginateParams } = useSelector(state => state.setting);
+    const { categories, categoryPaginateParams } = useSelector(state => state.setting);
 
     const dispatch = useDispatch();
 
     const first = useRef(0);
     const total = useRef(0);
-    const columns = useRef(settingPayloads.serviceColumns);
+    const columns = useRef(settingPayloads.categoryColumns);
     const showColumns = useRef(columns.current.filter(col => col.show === true));
 
     const onPageChange = async (event) => {
-        first.current = event.page * servicePaginateParams.rows;
-        dispatch(setServicePaginate({
-            ...servicePaginateParams,
+        first.current = event.page * categoryPaginateParams.rows;
+        dispatch(setCategoryPaginate({
+            ...categoryPaginateParams,
             page: event?.page + 1,
             rows: event?.rows,
         }));
@@ -39,29 +38,29 @@ export const ServiceList = () => {
 
     const onSort = (event) => {
         const sortOrder = event.sortOrder === 1 ? "DESC" : "ASC";
-        dispatch(setServicePaginate({
-            ...servicePaginateParams,
+        dispatch(setCategoryPaginate({
+            ...categoryPaginateParams,
             sort: sortOrder,
             order: event.sortField
         }));
     }
 
     const onSearchChange = (event) => {
-        dispatch(setServicePaginate({
-            ...servicePaginateParams,
+        dispatch(setCategoryPaginate({
+            ...categoryPaginateParams,
             search: event,
         }));
     }
 
     const init = useCallback(async () => {
         setLoading(true);
-        dispatch(setServicePaginate(servicePaginateParams));
-        const response = await settingServices.serviceIndex(dispatch, servicePaginateParams);
+        dispatch(setCategoryPaginate(categoryPaginateParams));
+        const response = await settingServices.categoryIndex(dispatch, categoryPaginateParams);
         if (response.status === 200) {
             total.current = response.data.total ? response.data.total : response.data.length;
         }
         setLoading(false);
-    }, [dispatch, servicePaginateParams]);
+    }, [dispatch, categoryPaginateParams]);
 
     useEffect(() => {
         init();
@@ -77,7 +76,7 @@ export const ServiceList = () => {
                         icon="pi pi-refresh"
                         size="small"
                         onClick={() => {
-                            dispatch(setServicePaginate(settingPayloads.servicePaginateParams));
+                            dispatch(setCategoryPaginate(settingPayloads.categoryPaginateParams));
                         }}
                     />
                 </div>
@@ -90,8 +89,8 @@ export const ServiceList = () => {
             <div className="grid">
                 <div className="col-3">
                     <TableSearch
-                        tooltipLabel={settingPayloads.serviceColumns}
-                        placeholder={"Search Service"}
+                        tooltipLabel={settingPayloads.categoryColumns}
+                        placeholder={"Search Category"}
                         onSearch={(e) => onSearchChange(e)}
                     />
                 </div>
@@ -106,12 +105,12 @@ export const ServiceList = () => {
                 <DataTable
                     dataKey="id"
                         size="small"
-                        value={services}
-                        sortField={servicePaginateParams.order}
-                        sortOrder={servicePaginateParams.sort === 'DESC' ? 1 : servicePaginateParams.sort === 'ASC' ? -1 : 0}
+                        value={categories}
+                        sortField={categoryPaginateParams.order}
+                        sortOrder={categoryPaginateParams.sort === 'DESC' ? 1 : categoryPaginateParams.sort === 'ASC' ? -1 : 0}
                         onSort={onSort}
                         loading={loading}
-                        emptyMessage="No service found."
+                        emptyMessage="No categories found."
                         globalFilterFields={settingPayloads.serviceColumns}
                         sortMode={paginateOptions.sortMode}
                         header={<HeaderRender />}
@@ -128,10 +127,8 @@ export const ServiceList = () => {
                                     sortable={col.sortable}
                                     body={(value) => {
                                         switch (col.field) {
-                                            case "service_type":
-                                                return (<ColumnNavigate url={`${paths.SETTING}/service/${value['id']}`} value={value[col.field]} />);
-                                            case "fees":
-                                                return (<span> {numeral(value[col.field]).format("0,0")} Baht </span>)
+                                            case "label":
+                                                return (<ColumnNavigate url={`${paths.SETTING}/category/${value['id']}`} value={value[col.field]} />);
                                             case "status":
                                                 return <ColumnStatus status={value[col.field]} />;
                                             case "created_at":
@@ -149,7 +146,7 @@ export const ServiceList = () => {
 
                 <Paginator
                     first={first.current}
-                    rows={servicePaginateParams.rows}
+                    rows={categoryPaginateParams.rows}
                     totalRecords={total.current}
                     rowsPerPageOptions={paginateOptions?.rowsPerPageOptions}
                     template={"FirstPageLink PrevPageLink CurrentPageReport NextPageLink LastPageLink RowsPerPageDropdown"}

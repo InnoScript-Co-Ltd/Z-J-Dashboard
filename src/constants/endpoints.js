@@ -11,5 +11,6 @@ export const endpoints = {
   image: `${baseURL}/storage/images`,
   visaService: "visa-services",
   setting: "setting",
-  service: "services"
+  service: "services",
+  categories: "categories"
 };
