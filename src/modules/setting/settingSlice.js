@@ -47,11 +47,6 @@ const settingSlice = createSlice({
             return state;
         },
 
-        setServicePaginate: (state, action) => {
-            state.servicePaginateParams = action.payload;
-            return state;
-        },
-
         setCategoryPaginate: (state, action) => {
             state.categoryPaginateParams = action.payload;
             return state;

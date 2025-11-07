@@ -14,6 +14,7 @@ import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
 import { Divider } from "primereact/divider";
 import { settingServices } from "../../setting/settingServices";
+import { updateError } from "../../shareSlice";
 
 export const CreateCustomer = () => {
 
@@ -28,6 +29,7 @@ export const CreateCustomer = () => {
     const [socialAppQrOrPhoto, setSocialAppQrOrPhoto] = useState("");
     const [employerPhoto, setEmployerPhoto] = useState("");
     const [employerHouseHoldPhoto, setEmployerHouseholdPhoto] = useState("");
+    const [householdPhoto, setHouseholdPhoto] = useState("");
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -43,6 +45,7 @@ export const CreateCustomer = () => {
 
         const response = await customerServices.store(dispatch, updatePayload);
         if(response.status === 200) {
+            dispatch(updateError(null));
             navigate(-1);
         }
         setLoading(false);
@@ -72,7 +75,7 @@ export const CreateCustomer = () => {
             <HeaderBar /> 
 
             <div className="w-full mt-3 p-3">
-                <BackButton />
+                <BackButton isConfirm={true} />
 
                 <Card 
                     className="mt-3"
@@ -101,25 +104,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Customer Photo </label>
-                                <InputText 
-                                    type="file"
-                                    className="w-full mt-1"
-                                    placeholder="Enter Customer Profile Photo"
-                                    disabled={loading}
-                                    value={photo}
-                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "photo", (updatePayload) => {
-                                        setPhoto(e.target.value);
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="photo" />
-                        </div>
-
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> NRC </label>
+                                <label> NRC (Optional) </label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter NRC"
@@ -133,45 +118,10 @@ export const CreateCustomer = () => {
                             <ValidationMessage field="nrc" />
                         </div>
 
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> NRC Front </label>
-                                <InputText 
-                                    type="file"
-                                    className="w-full mt-1"
-                                    placeholder="Enter NRC Front Photo"
-                                    disabled={loading}
-                                    value={nrcFront}
-                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_front", (updatePayload) => {
-                                        setNrcFront(e.target.value);
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="nrc_front" />
-                        </div>
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> NRC Back </label>
-                                <InputText 
-                                    type="file"
-                                    className="w-full mt-1"
-                                    placeholder="Enter NRC Back Photo"
-                                    disabled={loading}
-                                    value={nrcBack}
-                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_back", (updatePayload) => {
-                                        setNrcBack(e.target.value);
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="nrc_back" />
-                        </div>
-
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Passport </label>
+                                <label> Passport (Optional) </label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter Passport"
@@ -187,25 +137,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Passport Photo </label>
-                                <InputText 
-                                    type="file"
-                                    className="w-full mt-1"
-                                    placeholder="Enter Passport Photo"
-                                    disabled={loading}
-                                    value={passportPhoto}
-                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "passport_photo", (updatePayload) => {
-                                        setPassportPhoto(e.target.value);
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="passport_photo" />
-                        </div>
-
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Date of birth</label>
+                                <label> Date of birth (Optional) </label>
                                 <Calendar 
                                     className="w-full mt-1"
                                     placeholder="Enter Date of Birth"
@@ -222,7 +154,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Phone </label>
+                                <label> Phone (Optional) </label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter Phone"
@@ -238,7 +170,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Email </label>
+                                <label> Email (Optional) </label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter Email"
@@ -254,7 +186,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Contact By</label>
+                                <label> Contact By (Optional) </label>
                                 <Dropdown
                                     className="w-full mt-1"
                                     placeholder="Enter Contact By"
@@ -271,7 +203,7 @@ export const CreateCustomer = () => {
 
                         <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
-                                <label> Social App (Text)</label>
+                                <label> Social App (Optional)</label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter Social App (Text)"
@@ -283,24 +215,6 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="social_app" />
-                        </div>
-
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Social App QR or Photo </label>
-                                <InputText 
-                                    type="file"
-                                    className="w-full mt-1"
-                                    placeholder="Enter  Social App QR or Photo"
-                                    disabled={loading}
-                                    value={socialAppQrOrPhoto}
-                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "social_link_qrcode", (updatePayload) => {
-                                        setSocialAppQrOrPhoto(e.target.value);
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="social_link_qrcode" />
                         </div>
 
                         <div className="col-3 md:col-3 mt-3">
@@ -320,9 +234,10 @@ export const CreateCustomer = () => {
                             <ValidationMessage field="status" />
                         </div>
 
-                        <div className="col-6 md:col-6 mt-3">
+
+                        <div className="col-9 md:col-9 mt-3">
                             <div className="w-full">
-                                <label> Remark </label>
+                                <label> Remark (Optional) </label>
                                 <InputText 
                                     className="w-full mt-1"
                                     placeholder="Enter Remark"
@@ -336,7 +251,115 @@ export const CreateCustomer = () => {
                             <ValidationMessage field="remark" />
                         </div>
 
-                        <div className="col-12">
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Customer Photo (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter Customer Profile Photo"
+                                    disabled={loading}
+                                    value={photo}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "photo", (updatePayload) => {
+                                        setPhoto(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="photo" />
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Customer Household Photo (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter Customer Household Photo"
+                                    disabled={loading}
+                                    value={householdPhoto}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "household_photo", (updatePayload) => {
+                                        setHouseholdPhoto(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="household_photo" />
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> NRC Front (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter NRC Front Photo"
+                                    disabled={loading}
+                                    value={nrcFront}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_front", (updatePayload) => {
+                                        setNrcFront(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="nrc_front" />
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> NRC Back (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter NRC Back Photo"
+                                    disabled={loading}
+                                    value={nrcBack}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_back", (updatePayload) => {
+                                        setNrcBack(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="nrc_back" />
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Passport Photo (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter Passport Photo"
+                                    disabled={loading}
+                                    value={passportPhoto}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "passport_photo", (updatePayload) => {
+                                        setPassportPhoto(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="passport_photo" />
+                        </div>
+
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Social App QR or Photo (Optional)</label>
+                                <InputText 
+                                    type="file"
+                                    className="w-full mt-1"
+                                    placeholder="Enter  Social App QR or Photo"
+                                    disabled={loading}
+                                    value={socialAppQrOrPhoto}
+                                    onChange={(e) => payloadHandler(payload, e.target.files[0], "social_link_qrcode", (updatePayload) => {
+                                        setSocialAppQrOrPhoto(e.target.value);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                            </div>
+                            <ValidationMessage field="social_link_qrcode" />
+                        </div>
+
+                        {/* <div className="col-12">
                             <Divider />
                             <h3> Employer Information </h3>
                         </div>
@@ -364,9 +387,9 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="employer" />
-                        </div>
+                        </div> */}
 
-                        { payload.employer.code === 'EMPLOYER' && (
+                        {/* { payload.employer.code === 'EMPLOYER' && (
                             <div className="col-3 md:col-3 mt-3">
                                 <div className="w-full">
                                     <label> Choose Employer Type</label>
@@ -383,9 +406,9 @@ export const CreateCustomer = () => {
                                 </div>
                                 <ValidationMessage field="employer_type" />
                             </div>
-                        )}
+                        )} */}
 
-                        { payload.employer.code === 'EMPLOYER' && (
+                        {/* { payload.employer.code === 'EMPLOYER' && (
                             <div className="col-3 md:col-3 mt-3">
                                 <div className="w-full">
                                     <label> Employer Photo </label>
@@ -403,9 +426,9 @@ export const CreateCustomer = () => {
                                 </div>
                                 <ValidationMessage field="employer_photo" />
                             </div>
-                        )}
+                        )} */}
 
-                        { payload.employer.code === 'EMPLOYER' && (
+                        {/* { payload.employer.code === 'EMPLOYER' && (
                             <div className="col-3 md:col-3 mt-3">
                                 <div className="w-full">
                                     <label> Employer Household List Photo </label>
@@ -423,9 +446,9 @@ export const CreateCustomer = () => {
                                 </div>
                                 <ValidationMessage field="employer_household_photo" />
                             </div>
-                        )}
+                        )} */}
 
-                        { payload.employer.code === 'EMPLOYER' && payload.employer_type.code === 'COMPANY' && (
+                        {/* { payload.employer.code === 'EMPLOYER' && payload.employer_type.code === 'COMPANY' && (
                             <div className="col-12 md:col-12 mt-3">
                                 <div className="w-full">
                                     <label> Employer Company Data Link (Drive Link) </label>
@@ -441,14 +464,14 @@ export const CreateCustomer = () => {
                                 </div>
                                 <ValidationMessage field="employer_company_data" />
                             </div>
-                        )}
+                        )} */}
 
-                        <div className="col-12">
+                        {/* <div className="col-12">
                             <Divider />
                             <h3> Service Fee </h3>
-                        </div>
+                        </div> */}
 
-                        <div className="col-3 md:col-3 mt-3">
+                        {/* <div className="col-3 md:col-3 mt-3">
                             <div className="w-full">
                                 <label> Choose Year Of Insurance </label>
                                 <Dropdown
@@ -464,9 +487,9 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="year_of_insurance" />
-                        </div>
+                        </div> */}
 
-                        <div className="col-12 md:col-3 mt-3">
+                        {/* <div className="col-12 md:col-3 mt-3">
                             <div className="w-full">
                                 <label> Service Fee </label>
                                 <InputText 
@@ -479,9 +502,9 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="fees" />
-                        </div>
+                        </div> */}
 
-                        <div className="col-12 md:col-3 mt-3">
+                        {/* <div className="col-12 md:col-3 mt-3">
                             <div className="w-full">
                                 <label> Balance </label>
                                 <InputText 
@@ -494,9 +517,9 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="balance" />
-                        </div>
+                        </div> */}
 
-                        <div className="col-12 md:col-3 mt-3">
+                        {/* <div className="col-12 md:col-3 mt-3">
                             <div className="w-full">
                                 <label> Deposit </label>
                                 <InputText 
@@ -511,7 +534,7 @@ export const CreateCustomer = () => {
                                 />
                             </div>
                             <ValidationMessage field="deposit_amount" />
-                        </div>
+                        </div> */}
 
                         <div className="col-12 md:col-12 mt-3">
                             <Button 

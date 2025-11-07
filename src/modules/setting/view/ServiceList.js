@@ -128,6 +128,8 @@ export const ServiceList = () => {
                                     sortable={col.sortable}
                                     body={(value) => {
                                         switch (col.field) {
+                                            case "category":
+                                                return (<span> {value[col.field].label} </span>)
                                             case "service_type":
                                                 return (<ColumnNavigate url={`${paths.SETTING}/service/${value['id']}`} value={value[col.field]} />);
                                             case "fees":

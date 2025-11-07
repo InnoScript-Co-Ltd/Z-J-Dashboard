@@ -2,6 +2,7 @@ import { paginateOptions } from "../../constants/settings";
 
 export const settingPayloads = {
     servcieCreateOrUpdate: {
+        category_id: "",
         service_type: "",
         description: "",
         fees: "",
@@ -40,6 +41,7 @@ export const settingPayloads = {
     },
 
     serviceColumns: [
+        { field: "category", header: "Category", sortable: false, show: true },
         { field: "service_type", header: "Service Type", sortable: true, show: true },
         { field: "fees", header: "Fees", sortable: true, show: true },
         { field: "description", header: "Description", sortable: true, show: true },

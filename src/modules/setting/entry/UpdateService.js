@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { ValidationMessage } from "../../../components/ValidationMessage";
@@ -22,17 +22,31 @@ export const UpdateService = () => {
     const dispatch = useDispatch();
     const params = useParams();
 
+    const categories = useRef([]);
+
     const updateServiceHandler = async () => {
         setLoading(true);
         let updatePayload = {...payload};
-        updatePayload.service_type = payload.service_type.code;
+        updatePayload.category_id = payload.category_id.code;
         await settingServices.serviceUpdate(dispatch, updatePayload, params.id);
         setLoading(false);
     }
 
     const init = useCallback( async () => {
         setLoading(true);
-        await settingServices.serviceShow(dispatch, params.id);
+        const result = await settingServices.categoryIndex(dispatch, { filter: "status", value: "ACTIVE"});
+
+        if(result.status === 200) {
+            categories.current = result.data.map((value) => {
+                return {
+                    code: value.id,
+                    name: value.label
+                }
+            });
+
+            await settingServices.serviceShow(dispatch, params.id);
+        }
+
         setLoading(false);
     }, [dispatch, params]);
 
@@ -43,7 +57,7 @@ export const UpdateService = () => {
     useEffect(() => {
         if(service) {
             let updatePayload = {...service};
-            updatePayload.service_type = settingPayloads.yearOfInsurances.filter(value => value.code === service.service_type)[0];
+            updatePayload.category_id = categories.current.filter(value => value.code === service.category_id)[0];
             setPayload(updatePayload);
         }
     }, [service]);
@@ -58,19 +72,35 @@ export const UpdateService = () => {
 
             <div className="w-full p-3">
                 <Card 
-                    title="Create Service"
+                    title="Update Service"
                 >
                     <div className="grid">
                             <div className="col-3 md:col-3">
                                 <div className="w-full">
-                                    <label> Choose Service Types </label>
+                                    <label> Choose Category </label>
                                     <Dropdown
                                         className="w-full mt-1"
-                                        placeholder="Choose Service Type"
-                                        options={settingPayloads.yearOfInsurances}
-                                        value={payload.service_type}
+                                        placeholder="Choose Category"
+                                        options={categories.current}
+                                        value={payload.category_id}
                                         optionLabel="name"
-                                        onChange={(e) => payloadHandler(payload, e.value, "service_type", (updatePayload) => {
+                                        onChange={(e) => payloadHandler(payload, e.value, "category_id", (updatePayload) => {
+                                            setPayload(updatePayload);
+                                        })}
+                                    />
+                                </div>
+                                <ValidationMessage field="category_id" />
+                            </div>
+
+                            <div className="col-3 md:col-3">
+                                <div className="w-full">
+                                    <label> Service Type </label>
+                                    <InputText 
+                                        className="w-full mt-1"
+                                        placeholder="Enter Service Type"
+                                        disabled={loading}
+                                        value={payload.service_type ? payload.service_type : ""}
+                                        onChange={(e) => payloadHandler(payload, e.target.value, "service_type", (updatePayload) => {
                                             setPayload(updatePayload);
                                         })}
                                     />
@@ -78,7 +108,7 @@ export const UpdateService = () => {
                                 <ValidationMessage field="service_type" />
                             </div>
 
-                            <div className="col-3 md:col-3">
+                            <div className="col-2 md:col-2">
                                 <div className="w-full">
                                     <label> Fees </label>
                                     <InputText 
@@ -94,7 +124,7 @@ export const UpdateService = () => {
                                 <ValidationMessage field="fees" />
                             </div>
 
-                            <div className="col-6 md:col-6">
+                            <div className="col-4 md:col-4">
                                 <div className="w-full">
                                     <label> Description </label>
                                     <InputText 
@@ -113,7 +143,7 @@ export const UpdateService = () => {
                             <div className="col-12 md:col-12 mt-1">
                                 <Button 
                                     size="small"
-                                    label="Create"
+                                    label="Update"
                                     disabled={loading}
                                     loading={loading}
                                     onClick={() => updateServiceHandler() }

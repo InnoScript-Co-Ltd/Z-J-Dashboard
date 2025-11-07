@@ -18,7 +18,7 @@ export const CustomerList = () => {
 
     const init = useCallback(async () => {
         setLoading(true);
-        await settingServices.serviceIndex(dispatch, { filter: "status", value: "ACTIVE"});
+        await settingServices.categoryIndex(dispatch, { filter: "status", value: "ACTIVE"});
         setLoading(false);
     }, [dispatch]);
 

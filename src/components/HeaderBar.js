@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import { paths } from "../constants/path";
 import { adminServices } from "../modules/admin/adminService";
 import { keys } from "../constants/settings";
+import Logo from "../assets/images/logo.png";
 
 export const HeaderBar = () => {
 
@@ -44,8 +45,8 @@ export const HeaderBar = () => {
 
                 { !loading && admin && (
                     <>
-                        <Image src="/logo192.png" alt="Image" width="40" height="40" className="mr-2" />
-                        <div className="flex flex-column">
+                        <Image src={Logo} alt="Image" width="40" height="40" className="mr-2" onClick={() => navigate(paths.HOME)} style={{cursor: "pointer"}} />
+                        <div className="flex flex-column" onClick={() => navigate(paths.HOME)} style={{cursor: "pointer"}}>
                             { admin && <label> <b> {admin.first_name + " " + admin.last_name} </b> </label>}
                             <small> Z&J Thai CRM Management System </small>
                         </div>

@@ -115,7 +115,7 @@ export const UpdateCategory = () => {
                             <div className="col-12 md:col-12 mt-1">
                                 <Button 
                                     size="small"
-                                    label="Create"
+                                    label="Update"
                                     disabled={loading}
                                     loading={loading}
                                     onClick={() => updateCategoryHandler() }

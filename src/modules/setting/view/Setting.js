@@ -13,7 +13,7 @@ export const Setting = () => {
             <HeaderBar />
 
             <div className="w-full flex flex-row justify-content-between align-items-center mt-3 p-3">
-                <BackButton />
+                <BackButton isConfirm={true} />
             </div>
 
             <div className="w-full p-3">
