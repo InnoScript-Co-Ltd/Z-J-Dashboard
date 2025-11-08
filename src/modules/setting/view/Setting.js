@@ -1,15 +1,17 @@
 import { TabPanel, TabView } from "primereact/tabview"
 import { BackButton } from "../../../components/BackButton"
 import { HeaderBar } from "../../../components/HeaderBar"
-import { ServiceList } from "./ServiceList"
-import { CreateCategory } from "../entry/CreateCategory"
-import { CategoryList } from "./CategoryList"
-import { CreateService } from "../entry/CreateService";
+import { CreateCategory } from "../../categories/entry/CreateCategory"
+import { CategoryList } from "../../categories/view/CategoryList";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { CategoryServiceList } from "../../categoryService/view/CategoryServiceList";
+import { CreateCategoryService } from "../../categoryService/entry/CreateCategoryService";
 
 export const Setting = () => {
 
     return(
         <>
+            <ConfirmDialog />
             <HeaderBar />
 
             <div className="w-full flex flex-row justify-content-between align-items-center mt-3 p-3">
@@ -23,9 +25,9 @@ export const Setting = () => {
                         <CategoryList />
                     </TabPanel>
 
-                    <TabPanel header="Service">
-                        <CreateService />
-                        <ServiceList />
+                    <TabPanel header="Category Service">
+                        <CreateCategoryService />
+                        <CategoryServiceList />
                     </TabPanel>
                 </TabView>
             </div>

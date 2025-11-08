@@ -1,6 +1,6 @@
 import { Button } from "primereact/button"
 import { useNavigate } from "react-router-dom"
-import { confirmDialog, ConfirmDialog } from 'primereact/confirmdialog';
+import { confirmDialog } from 'primereact/confirmdialog';
 import { useEffect } from "react";
 
 export const BackButton = ({isConfirm}) => {
@@ -32,12 +32,11 @@ export const BackButton = ({isConfirm}) => {
 
     return(
         <>
-            <ConfirmDialog />
             <Button
                 size="small"
                 icon="pi pi-arrow-left" 
                 outlined
-                label="Back"
+                label="BACK"
                 onClick={() => isConfirm ? dialogBox(): navigate(-1)}
             />
         </>

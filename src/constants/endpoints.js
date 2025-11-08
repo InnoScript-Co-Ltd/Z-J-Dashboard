@@ -12,5 +12,6 @@ export const endpoints = {
   visaService: "visa-services",
   setting: "setting",
   service: "services",
-  categories: "categories"
+  categories: "categories",
+  categoryService: "category-service"
 };

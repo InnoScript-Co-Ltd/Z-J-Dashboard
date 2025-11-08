@@ -84,6 +84,6 @@ export const delRequest = async (path, dispatch) => {
     const result = await http.delete(path);
     return httpResponseHandler(result);
   } catch (error) {
-    return httpErrorHandler(error);
+    return httpErrorHandler(error, dispatch);
   }
 };

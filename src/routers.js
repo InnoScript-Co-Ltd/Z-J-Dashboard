@@ -11,6 +11,8 @@ import { homeRoutes } from "./modules/home/homeRoutes";
 import { visaServiceRoutes } from "./modules/visaServices/visaServiceRoutes";
 import { customerRoutes } from "./modules/customer/customerRoutes";
 import { settingRoutes } from "./modules/setting/settingRoutes";
+import { categoryRoutes } from "./modules/categories/categoryRoutes";
+import { categoryServiceRoutes } from "./modules/categoryService/categoryServiceRoutes";
 
 export const routers = createBrowserRouter([
     {
@@ -22,7 +24,9 @@ export const routers = createBrowserRouter([
             ...adminRoutes,
             ...visaServiceRoutes,
             ...customerRoutes,
-            ...settingRoutes
+            ...settingRoutes,
+            ...categoryRoutes,
+            ...categoryServiceRoutes
         ]
     },
     {
