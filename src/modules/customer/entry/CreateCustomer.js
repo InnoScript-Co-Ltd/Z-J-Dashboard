@@ -2,9 +2,9 @@ import { Card } from "primereact/card";
 import { InputText } from "primereact/inputtext";
 import { ValidationMessage } from "../../../components/ValidationMessage";
 import { Button } from "primereact/button";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { useCallback, useEffect, useState } from "react";
+import { useState } from "react";
 import { payloadHandler } from "../../../utilities/handlers";
 import { HeaderBar } from "../../../components/HeaderBar";
 import { BackButton } from "../../../components/BackButton";
@@ -12,23 +12,23 @@ import { customerPayloads } from "../customerPayloads";
 import { customerServices } from "../customerService";
 import { Calendar } from "primereact/calendar";
 import { Dropdown } from "primereact/dropdown";
-import { Divider } from "primereact/divider";
-import { settingServices } from "../../setting/settingServices";
 import { updateError } from "../../shareSlice";
+import { ConfirmDialog } from "primereact/confirmdialog";
+import { setCreateCustomerForm } from "../customerSlice";
 
 export const CreateCustomer = () => {
 
-    const [payload, setPayload] = useState(customerPayloads.createOrUpdate);
+    const { customerCreateForm } = useSelector(state => state.customer);
+
+    const [payload, setPayload] = useState(customerCreateForm);
     const [loading, setLoading] = useState(false);
-    const [services, setService] = useState([]);
+    const [isConfirm, setIsConfirm] = useState(true);
 
     const [photo, setPhoto] = useState("");
     const [nrcFront, setNrcFront] = useState("");
     const [nrcBack, setNrcBack] = useState("");
     const [passportPhoto, setPassportPhoto] = useState("");
     const [socialAppQrOrPhoto, setSocialAppQrOrPhoto] = useState("");
-    const [employerPhoto, setEmployerPhoto] = useState("");
-    const [employerHouseHoldPhoto, setEmployerHouseholdPhoto] = useState("");
     const [householdPhoto, setHouseholdPhoto] = useState("");
 
     const navigate = useNavigate();
@@ -36,46 +36,32 @@ export const CreateCustomer = () => {
 
     const createCustomerHandler = async () => {
         setLoading(true);
-        let updatePayload = {...payload};
-        updatePayload.employer = payload.employer.code;
-        updatePayload.contact_by = payload.contact_by.code;
-        updatePayload.status = payload.status.code;
-        updatePayload.employer_type = payload.employer_type.code;
-        updatePayload.year_of_insurance = payload.year_of_insurance.code;
 
-        const response = await customerServices.store(dispatch, updatePayload);
+        let updatePayload = {...payload};
+
+        const dob = new Date(payload.dob);
+
+        updatePayload.status = payload.status.code;
+        updatePayload.contact_by = payload.contact_by.code;
+        
+        updatePayload.dob = new Date(dob.setDate(dob.getDate() + 1)).toUTCString();
+
+        const response = await customerServices.customerStore(dispatch, updatePayload);
         if(response.status === 200) {
+            setIsConfirm(false);
             dispatch(updateError(null));
             navigate(-1);
         }
         setLoading(false);
     }
 
-    const init = useCallback(async() => {
-        setLoading(true);
-        const response = await settingServices.serviceIndex(dispatch, { filter: "status", value: "ACTIVE"});
-        if(response.status === 200) {
-            let updateServices = response.data.map((value) => {
-                return {
-                    code: value.service_type,
-                    name: value.service_type,
-                    fees: value.fees
-                }
-            });
-            setService(updateServices);
-        }
-        setLoading(false);
-    }, [dispatch]);
-
-    useEffect(() => {
-        init();
-    }, [init]);
     return (
         <>
+            <ConfirmDialog />
             <HeaderBar /> 
 
             <div className="w-full mt-3 p-3">
-                <BackButton isConfirm={true} />
+                <BackButton isConfirm={isConfirm} />
 
                 <Card 
                     className="mt-3"
@@ -95,6 +81,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.name}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "name", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -111,6 +98,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.nrc}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "nrc", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -128,6 +116,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.passport}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "passport", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -145,6 +134,7 @@ export const CreateCustomer = () => {
                                     value={payload.dob}
                                     showIcon
                                     onChange={(e) => payloadHandler(payload, e.target.value, "dob", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload)
                                     })}
                                 />
@@ -161,6 +151,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.phone}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "phone", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -177,6 +168,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.email}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "email", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -190,10 +182,11 @@ export const CreateCustomer = () => {
                                 <Dropdown
                                     className="w-full mt-1"
                                     placeholder="Enter Contact By"
-                                    options={customerPayloads.contactByTypes}
+                                    options={customerPayloads.customerContactByTypes}
                                     value={payload.contact_by}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "contact_by", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -210,6 +203,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.social_app}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "social_app", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -223,10 +217,11 @@ export const CreateCustomer = () => {
                                 <Dropdown
                                     className="w-full mt-1"
                                     placeholder="Enter Contact By"
-                                    options={customerPayloads.status}
+                                    options={customerPayloads.customerStatus}
                                     value={payload.status}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "status", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -244,6 +239,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={payload.remark}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "remark", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -261,6 +257,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={photo}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "photo", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -279,6 +276,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={householdPhoto}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "household_photo", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setHouseholdPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -297,6 +295,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={nrcFront}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_front", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setNrcFront(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -315,6 +314,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={nrcBack}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_back", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setNrcBack(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -333,6 +333,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={passportPhoto}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "passport_photo", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setPassportPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -351,6 +352,7 @@ export const CreateCustomer = () => {
                                     disabled={loading}
                                     value={socialAppQrOrPhoto}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "social_link_qrcode", (updatePayload) => {
+                                        setCreateCustomerForm(updatePayload);
                                         setSocialAppQrOrPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -359,187 +361,10 @@ export const CreateCustomer = () => {
                             <ValidationMessage field="social_link_qrcode" />
                         </div>
 
-                        {/* <div className="col-12">
-                            <Divider />
-                            <h3> Employer Information </h3>
-                        </div>
-
-                        <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Choose Employer</label>
-                                <Dropdown
-                                    className="w-full mt-1"
-                                    placeholder="Choose Employer"
-                                    options={customerPayloads.employer}
-                                    value={payload.employer}
-                                    optionLabel="name"
-                                    onChange={(e) => payloadHandler(payload, e.value, "employer", (updatePayload) => {
-                                        if(e.value.code === "EMPLOYER") {
-                                            updatePayload.pink_card = "PINK_CARD_HOLDER";
-                                        }
-
-                                        if(e.value.code === "HIRE_EMPLOYER") {
-                                            updatePayload.pink_card = "NO_PINK_CARD";
-                                        }
-                                        
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="employer" />
-                        </div> */}
-
-                        {/* { payload.employer.code === 'EMPLOYER' && (
-                            <div className="col-3 md:col-3 mt-3">
-                                <div className="w-full">
-                                    <label> Choose Employer Type</label>
-                                    <Dropdown
-                                        className="w-full mt-1"
-                                        placeholder="Choose Employer Type"
-                                        options={customerPayloads.employerTypes}
-                                        value={payload.employer_type}
-                                        optionLabel="name"
-                                        onChange={(e) => payloadHandler(payload, e.value, "employer_type", (updatePayload) => {
-                                            setPayload(updatePayload);
-                                        })}
-                                    />
-                                </div>
-                                <ValidationMessage field="employer_type" />
-                            </div>
-                        )} */}
-
-                        {/* { payload.employer.code === 'EMPLOYER' && (
-                            <div className="col-3 md:col-3 mt-3">
-                                <div className="w-full">
-                                    <label> Employer Photo </label>
-                                    <InputText 
-                                        type="file"
-                                        className="w-full mt-1"
-                                        placeholder="Enter Employer Photo"
-                                        disabled={loading}
-                                        value={employerPhoto}
-                                        onChange={(e) => payloadHandler(payload, e.target.files[0], "employer_photo", (updatePayload) => {
-                                            setEmployerPhoto(e.target.value);
-                                            setPayload(updatePayload);
-                                        })}
-                                    />
-                                </div>
-                                <ValidationMessage field="employer_photo" />
-                            </div>
-                        )} */}
-
-                        {/* { payload.employer.code === 'EMPLOYER' && (
-                            <div className="col-3 md:col-3 mt-3">
-                                <div className="w-full">
-                                    <label> Employer Household List Photo </label>
-                                    <InputText 
-                                        type="file"
-                                        className="w-full mt-1"
-                                        placeholder="Enter Employer Household Photo"
-                                        disabled={loading}
-                                        value={employerHouseHoldPhoto}
-                                        onChange={(e) => payloadHandler(payload, e.target.files[0], "employer_household_photo", (updatePayload) => {
-                                            setEmployerHouseholdPhoto(e.target.value);
-                                            setPayload(updatePayload);
-                                        })}
-                                    />
-                                </div>
-                                <ValidationMessage field="employer_household_photo" />
-                            </div>
-                        )} */}
-
-                        {/* { payload.employer.code === 'EMPLOYER' && payload.employer_type.code === 'COMPANY' && (
-                            <div className="col-12 md:col-12 mt-3">
-                                <div className="w-full">
-                                    <label> Employer Company Data Link (Drive Link) </label>
-                                    <InputText 
-                                        className="w-full mt-1"
-                                        placeholder="Enter Employer Company Data Link"
-                                        disabled={loading}
-                                        value={payload.employer_company_data}
-                                        onChange={(e) => payloadHandler(payload, e.target.value, "employer_company_data", (updatePayload) => {
-                                            setPayload(updatePayload);
-                                        })}
-                                    />
-                                </div>
-                                <ValidationMessage field="employer_company_data" />
-                            </div>
-                        )} */}
-
-                        {/* <div className="col-12">
-                            <Divider />
-                            <h3> Service Fee </h3>
-                        </div> */}
-
-                        {/* <div className="col-3 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Choose Year Of Insurance </label>
-                                <Dropdown
-                                    className="w-full mt-1"
-                                    placeholder="Choose Year Of Insurance"
-                                    options={services ? services : []}
-                                    value={payload.year_of_insurance}
-                                    optionLabel="name"
-                                    onChange={(e) => payloadHandler(payload, e.value, "year_of_insurance", (updatePayload) => {
-                                        updatePayload.fees = e.value.fees;
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="year_of_insurance" />
-                        </div> */}
-
-                        {/* <div className="col-12 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Service Fee </label>
-                                <InputText 
-                                    className="w-full mt-1"
-                                    disabled={true}
-                                    value={payload.fees}
-                                    onChange={(e) => payloadHandler(payload, e.target.value, "fees", (updatePayload) => {
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="fees" />
-                        </div> */}
-
-                        {/* <div className="col-12 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Balance </label>
-                                <InputText 
-                                    className="w-full mt-1"
-                                    disabled={true}
-                                    value={payload.balance}
-                                    onChange={(e) => payloadHandler(payload, e.target.value, "balance", (updatePayload) => {
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="balance" />
-                        </div> */}
-
-                        {/* <div className="col-12 md:col-3 mt-3">
-                            <div className="w-full">
-                                <label> Deposit </label>
-                                <InputText 
-                                    className="w-full mt-1"
-                                    disabled={loading}
-                                    placeholder="Enter Deposit Fee"
-                                    value={payload.deposit_amount}
-                                    onChange={(e) => payloadHandler(payload, e.target.value, "deposit_amount", (updatePayload) => {
-                                        updatePayload.balance = payload.fees - e.target.value;
-                                        setPayload(updatePayload);
-                                    })}
-                                />
-                            </div>
-                            <ValidationMessage field="deposit_amount" />
-                        </div> */}
-
                         <div className="col-12 md:col-12 mt-3">
                             <Button 
                                 size="small"
-                                label="Create"
+                                label="CREATE"
                                 disabled={loading}
                                 loading={loading}
                                 onClick={() => createCustomerHandler() }

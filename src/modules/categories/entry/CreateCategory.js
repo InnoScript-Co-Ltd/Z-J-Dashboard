@@ -41,7 +41,7 @@ export const CreateCategory = () => {
                 <div className="grid">
                     <div className="col-3 md:col-3">
                         <div className="w-full">
-                            <label> Label </label>
+                            <label> Label (Require)</label>
                             <InputText 
                                 className="w-full mt-1"
                                 placeholder="Enter Category Label"
@@ -58,7 +58,7 @@ export const CreateCategory = () => {
 
                     <div className="col-9 md:col-9">
                         <div className="w-full">
-                            <label> Description </label>
+                            <label> Description (Optional) </label>
                             <InputText 
                                 className="w-full mt-1"
                                 placeholder="Enter Description"

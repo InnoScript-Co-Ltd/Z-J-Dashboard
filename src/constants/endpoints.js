@@ -8,7 +8,7 @@ export const endpoints = {
   customer: "customer",
   login: "auth/login",
   activity: "activities",
-  image: `${baseURL}/storage/images`,
+  image: `${baseURL}/storage/uploads`,
   visaService: "visa-services",
   setting: "setting",
   service: "services",

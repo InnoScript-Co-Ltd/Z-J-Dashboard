@@ -6,30 +6,37 @@ const customerSlice = createSlice({
     initialState: {
         customers: [],
         customer: null,
-        paginateParams: customerPayloads.paginateParams,
+        customerPaginateParams: customerPayloads.customerPaginateParams,
+        customerCreateForm: customerPayloads.customerCreateOrUpdate,
+        customerUpdateForm: customerPayloads.customerCreateOrUpdate
     },
     reducers: {
-        index: (state, action) => {
+        customerIndex: (state, action) => {
             state.customers = action.payload;
             return state;
         },
 
-        update: (state, action) => {
+        customerUpdate: (state, action) => {
             state.customer = action.payload;
             return state;
         },
 
-        show: (state, action) => {
-            state.customer = action.payload;
+        setCustomerPaginate: (state, action) => {
+            state.customerPaginateParams = action.payload;
             return state;
         },
 
-        setPaginate: (state, action) => {
-            state.paginateParams = action.payload;
+        setCreateCustomerForm: (state, action) => {
+            state.customerCreateForm = action.payload;
+            return state;
+        },
+
+        setUpdateCustomerForm: (state, action) => {
+            state.customerUpdateForm = action.payload;
             return state;
         }
     }
 });
 
-export const { index, update, show, setPaginate } = customerSlice.actions;
+export const { customerIndex, customerUpdate, setCustomerPaginate, setCreateCustomerForm, setUpdateCustomerForm } = customerSlice.actions;
 export default customerSlice.reducer;

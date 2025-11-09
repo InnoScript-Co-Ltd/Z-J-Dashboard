@@ -1,36 +1,26 @@
 import { paginateOptions } from "../../constants/settings";
 
 export const customerPayloads = {
-    createOrUpdate: {
+    customerCreateOrUpdate: {
         name: "",
-        photo: "",
         nrc: "",
         nrc_front: "",
         nrc_back: "",
         passport: "",
-        passport_photo: "",
-        household_photo: "",
         dob: "",
         phone: "",
         email: "",
         contact_by: "",
         social_app: "",
-        social_link_qrcode: "",
         remark: "",
         status: "",
-        year_of_insurance: "",
-        fees: "",
-        deposit_amount: "",
-        balance: "",
-        pink_card: "",
-        employer: "",
-        employer_type: "",
-        employer_photo: "",
-        employer_household_photo: "",
-        employer_company_data: ""
+        passport_photo: "",
+        household_photo: "",
+        photo: "",
+        social_link_qrcode: "",
     },
 
-    contactByTypes: [
+    customerContactByTypes: [
         { code: "Tiktok", name: "Tiktok" },
         { code: "Facebook", name: "Facebook" },
         { code: "Instagram", name: "Instagram" },
@@ -44,53 +34,29 @@ export const customerPayloads = {
         { code: "WalkIn", name: "Walk In" }
     ],
 
-    pinkCards: [
-        { code: "PINK_CARD_HOLDER", name: "PINK_CARD_HOLDER" },
-        { code: "NON_PINK_CARD_HOLDER", name: "NON_PINK_CARD_HOLDER" }
-    ],
-
-    status: [
+    customerStatus: [
         { code: "CONFIRMED", name: "CONFIRMED" },
         { code: "STILL", name: "STILL" },
         { code: "CANCEL", name: "CANCEL" },
     ],
 
-    employer: [
-        { code: "EMPLOYER", name: "EMPLOYER" },
-        { code: "HIRE_EMPLOYER", name: "HIRE_EMPLOYER" },
-    ],
-
-    employerTypes: [
-        { code: "NORMAL", name: "NORMAL" },
-        { code: "COMPANY", name: "COMPANY" },
-    ],
-
-    yearOfInsurances: [
-        { code: "6 Months", name: "6 Months" },
-        { code: "1 Year", name: "1 Year" },
-    ],
-
-    paginateParams: {
+    customerPaginateParams: {
         page: 1,
         rows: paginateOptions.rows,
-        columns: "id,name,nrc,passport,dob,phone,email,social_app,fees,deposit_amount,balance,year_of_insurance",
+        columns: "id,reference_id,name,nrc,passport,dob,phone,email,social_app",
         search: "",
         order:"id",
         sort: "DESC"
     },
 
-    columns: [
+    customerColumns: [
+        { field: "reference_id", header: "Reference Id", sortable: true, show: true },
         { field: "name", header: "Name", sortable: true, show: true },
         { field: "nrc", header: "Nrc", sortable: true, show: true },
         { field: "passport", header: "Passport", sortable: true, show: true },
         { field: "status", header: "Status", sortable: true, show: true },
-        // { field: "fees", header: "fees", sortable: true, show: true },
-        // { field: "deposit_amount", header: "Deposit Amount", sortable: true, show: true },
-        // { field: "balance", header: "Balance", sortable: true, show: true },
-        // { field: "pink_card", header: "Pink Card", sortable: true, show: true },
-        // { field: "year_of_insurance", header: "Year Of Insurance", sortable: true, show: true },
-        { field: "option", header: "Option", sortable: false, show: true },
         { field: "created_at", header: "Created At", sortable: true, show: true },
         { field: "updated_at", header: "Updated At", sortable: true, show: true },
+        { field: "action", header: "Action", sortable: false, show: true },
     ],
 }
