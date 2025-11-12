@@ -142,7 +142,7 @@ export const CustomerList = () => {
                                 <Column
                                     className="table-column"
                                     key={col.field}
-                                    style={{ minWidth: "250px" }}
+                                    style={col.width ? {width: col.width} : { width: "250px"}}
                                     field={col.field}
                                     header={col.header}
                                     sortable={col.sortable}
@@ -156,7 +156,17 @@ export const CustomerList = () => {
                                                 return (<ColumnDate value={value[col.field]} />);
                                             case 'action':
                                                 return (
-                                                    <div className="">
+                                                    <div className="flex flex-row">
+                                                        <Button 
+                                                            outlined
+                                                            className="mr-2"
+                                                            severity="success"
+                                                            label="ADD SERVICE"
+                                                            size="small"
+                                                            icon="pi pi-plus-circle"
+                                                            onClick={() => navigate(`${paths.ONBOARDING_SERVICE}/create/${value["id"]}`)}
+                                                        />
+
                                                         <Button 
                                                             outlined
                                                             severity="info"

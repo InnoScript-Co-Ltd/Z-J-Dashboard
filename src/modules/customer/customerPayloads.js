@@ -57,6 +57,6 @@ export const customerPayloads = {
         { field: "status", header: "Status", sortable: true, show: true },
         { field: "created_at", header: "Created At", sortable: true, show: true },
         { field: "updated_at", header: "Updated At", sortable: true, show: true },
-        { field: "action", header: "Action", sortable: false, show: true },
+        { field: "action", header: "Action", sortable: false, show: true, width: "500px" },
     ],
 }

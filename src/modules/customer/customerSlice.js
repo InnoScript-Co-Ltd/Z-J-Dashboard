@@ -18,6 +18,7 @@ const customerSlice = createSlice({
 
         customerUpdate: (state, action) => {
             state.customer = action.payload;
+            state.customerUpdateForm = action.payload;
             return state;
         },
 

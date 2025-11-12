@@ -17,5 +17,6 @@ export const paths = {
     VISA_SERVICE_CREATE: '/visa-services/create',
     SETTING: "/setting",
     CATEGORY: "/category",
-    CATEGORY_SERVICE: "/category-service"
+    CATEGORY_SERVICE: "/category-service",
+    ONBOARDING_SERVICE: "onboarding-service"
 }

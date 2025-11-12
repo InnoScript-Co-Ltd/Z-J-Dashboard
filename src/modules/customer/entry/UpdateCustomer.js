@@ -20,23 +20,36 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 
 export const UpdateCustomer = () => {
 
-    const { customer, customerUpdateForm } = useSelector(state => state.customer);
+    const { customer } = useSelector(state => state.customer);
 
     const [loading, setLoading] = useState(false);
     const [isConfirm, setIsConfirm] = useState(true);
-    const [payload, setPayload] = useState(customerUpdateForm);
-    const [householdPhoto, setHouseholdPhoto] = useState("");
-    const [photo, setPhoto] = useState("");
-    const [nrcFront, setNrcFront] = useState("");
-    const [nrcBack, setNrcBack] = useState("");
-    const [passportPhoto, setPassportPhoto] = useState("");
-    const [socialAppQrOrPhoto, setSocialAppQrOrPhoto] = useState("");
+    const [payload, setPayload] = useState(customerPayloads.customerCreateOrUpdate);
+
+    const [householdPhoto, setHouseholdPhoto] = useState(null);
+    const [photo, setPhoto] = useState(null);
+    const [nrcFront, setNrcFront] = useState(null);
+    const [nrcBack, setNrcBack] = useState(null);
+    const [passportPhoto, setPassportPhoto] = useState(null);
+    const [socialAppQrOrPhoto, setSocialAppQrOrPhoto] = useState(null);
 
     const dispatch = useDispatch();
     const params = useParams();
 
     const updateCustomerHandler = async () => {
-        setIsConfirm(false);
+        setLoading(true);
+
+        let updatePayload = {...payload};
+        updatePayload.status = payload.status.code;
+        updatePayload.contact_by = payload.contact_by.code;
+
+        const customerUpdateResponse = await customerServices.customerUpdate(dispatch, params.id, updatePayload);
+
+        if(customerUpdateResponse.status === 200) {
+            setIsConfirm(false);
+        }
+
+        setLoading(false);
     }
 
     const init = useCallback(async () => {
@@ -47,12 +60,28 @@ export const UpdateCustomer = () => {
 
     const mount = useCallback(async () => {
         if(customer) {
+            const dob = new Date(customer.dob);
+
             let updatePayload = {...customer};
+
             updatePayload.status = customerPayloads.customerStatus.filter(value => value.code === customer.status)[0];
             updatePayload.contact_by = customerPayloads.customerContactByTypes.filter(value => value.code === customer.contact_by)[0];
-            setPayload(updatePayload);
+            updatePayload.dob = new Date(dob.setDate(dob.getDate() + 1)).toUTCString();
+
+            dispatch(setUpdateCustomerForm(updatePayload));
+
+            let update = {...updatePayload};
+
+            update.photo = null;
+            update.passport_photo = null;
+            update.household_photo = null;
+            update.nrc_front = null;
+            update.nrc_back = null;
+            update.social_link_qrcode = null;
+
+            setPayload(update);
         }
-    }, [customer]); 
+    }, [dispatch, customer]); 
 
     useEffect(() => {
         init();
@@ -141,7 +170,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.name}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "name", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -158,7 +186,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.nrc}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "nrc", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -175,7 +202,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.passport}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "passport", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -190,10 +216,9 @@ export const UpdateCustomer = () => {
                                     className="w-full mt-1"
                                     placeholder="Enter Date of Birth"
                                     disabled={loading}
-                                    value={payload.dob}
+                                    value={new Date(payload.dob)}
                                     showIcon
                                     onChange={(e) => payloadHandler(payload, e.target.value, "dob", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload)
                                     })}
                                 />
@@ -210,7 +235,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.phone}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "phone", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -227,7 +251,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.email}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "email", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -245,7 +268,6 @@ export const UpdateCustomer = () => {
                                     value={payload.contact_by}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "contact_by", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -262,7 +284,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.social_app}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "social_app", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -280,7 +301,6 @@ export const UpdateCustomer = () => {
                                     value={payload.status}
                                     optionLabel="name"
                                     onChange={(e) => payloadHandler(payload, e.value, "status", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -297,7 +317,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={payload.remark}
                                     onChange={(e) => payloadHandler(payload, e.target.value, "remark", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPayload(updatePayload);
                                     })}
                                 />
@@ -315,7 +334,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={photo}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "photo", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -334,7 +352,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={nrcFront}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_front", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setNrcFront(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -353,7 +370,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={nrcBack}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "nrc_back", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setNrcBack(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -372,7 +388,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={passportPhoto}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "passport_photo", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setPassportPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
@@ -391,7 +406,6 @@ export const UpdateCustomer = () => {
                                     disabled={loading}
                                     value={householdPhoto}
                                     onChange={(e) => payloadHandler(payload, e.target.files[0], "household_photo", (updatePayload) => {
-                                        dispatch(setUpdateCustomerForm(updatePayload))
                                         setHouseholdPhoto(e.target.value);
                                         setPayload(updatePayload);
                                     })}
