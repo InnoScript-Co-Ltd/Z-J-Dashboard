@@ -14,6 +14,12 @@ export const features = [
         link: paths.VISA_SERVICE_LIST
     },
     {
+        name: "Employer",
+        icon: "pi pi-briefcase",
+        description: "Handle purchase orders and supplier relationships.",
+        link: paths.EMPLOYER
+    },
+    {
         name: "Administrator",
         icon: "pi pi-users",
         description: "Manage employee records and roles within the organization.",

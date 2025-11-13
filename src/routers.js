@@ -13,6 +13,8 @@ import { customerRoutes } from "./modules/customer/customerRoutes";
 import { settingRoutes } from "./modules/setting/settingRoutes";
 import { categoryRoutes } from "./modules/categories/categoryRoutes";
 import { categoryServiceRoutes } from "./modules/categoryService/categoryServiceRoutes";
+import { onboardingServiceRoutes } from "./modules/onboardingService/onboardingServiceRoutes";
+import { employerRoutes } from "./modules/employer/employerRoutes";
 
 export const routers = createBrowserRouter([
     {
@@ -26,7 +28,9 @@ export const routers = createBrowserRouter([
             ...customerRoutes,
             ...settingRoutes,
             ...categoryRoutes,
-            ...categoryServiceRoutes
+            ...categoryServiceRoutes,
+            ...onboardingServiceRoutes,
+            ...employerRoutes
         ]
     },
     {

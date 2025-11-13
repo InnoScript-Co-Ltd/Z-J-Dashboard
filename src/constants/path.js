@@ -18,5 +18,6 @@ export const paths = {
     SETTING: "/setting",
     CATEGORY: "/category",
     CATEGORY_SERVICE: "/category-service",
-    ONBOARDING_SERVICE: "onboarding-service"
+    ONBOARDING_SERVICE: "/onboarding-service",
+    EMPLOYER: "/employer"
 }

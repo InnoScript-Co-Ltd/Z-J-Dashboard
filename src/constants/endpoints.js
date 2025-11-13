@@ -13,5 +13,6 @@ export const endpoints = {
   setting: "setting",
   service: "services",
   categories: "categories",
-  categoryService: "category-service"
+  categoryService: "category-service",
+  employer: "employer"
 };

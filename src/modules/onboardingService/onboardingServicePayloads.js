@@ -3,7 +3,7 @@ import { paginateOptions } from "../../constants/settings";
 export const onboardingServicePayloads = {
     onboardingServiceCreateOrUpdate: {
         category_id: "",
-        service_type: "",
+        category_service_id: "",
         description: "",
         fees: "",
         status: ""
