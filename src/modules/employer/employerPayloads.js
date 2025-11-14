@@ -31,6 +31,6 @@ export const employerPayloads = {
         { field: "employer_type", header: "Type", sortable: true, show: true },
         { field: "created_at", header: "Created At", sortable: true, show: true },
         { field: "updated_at", header: "Updated At", sortable: true, show: true },
-        { field: "action", header: "Action", sortable: false, show: false, width: "500px" }
+        { field: "action", header: "Action", sortable: false, show: true, width: "500px" }
     ],
 }

@@ -147,7 +147,7 @@ export const EmployerList = () => {
                                     sortable={col.sortable}
                                     body={(value) => {
                                         switch (col.field) {
-                                            case "status":
+                                            case "employer_status":
                                                 return <ColumnStatus status={value[col.field]} />;
                                             case "created_at":
                                                 return (<ColumnDate value={value[col.field]} />);
@@ -172,7 +172,7 @@ export const EmployerList = () => {
                                                             label="EDIT"
                                                             size="small"
                                                             icon="pi pi-pen-to-square"
-                                                            onClick={() => navigate(`${paths.EMPLOYER}/${value["id"]}`)}
+                                                            onClick={() => navigate(`${paths.EMPLOYER}/update/${value["id"]}`)}
                                                         />
                                                     </div>
                                                 )
