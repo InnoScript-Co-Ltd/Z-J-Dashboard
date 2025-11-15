@@ -19,5 +19,6 @@ export const paths = {
     CATEGORY: "/category",
     CATEGORY_SERVICE: "/category-service",
     ONBOARDING_SERVICE: "/onboarding-service",
-    EMPLOYER: "/employer"
+    EMPLOYER: "/employer",
+    DOWNLOAD: "download"
 }

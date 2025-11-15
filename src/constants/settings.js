@@ -72,7 +72,11 @@ export const statusOptions = [
   { status: "EMPLOYER", color: "success" },
   { status: "HIRE_EMPLOYER", color: "success" },
   { status: "NORMAL", color: "info" },
-  { status: "COMPANY", color: "warning" } 
+  { status: "COMPANY", color: "warning" },
+  { status: "REFUND", color: "danger" },
+  { status: "DEPOSIT", color: "success" },
+  { status: "COMPLETED", color: "info" },
+  { status: "CANCELED", color: "warning" }
 ];
 
 export const tooltipOptions = {

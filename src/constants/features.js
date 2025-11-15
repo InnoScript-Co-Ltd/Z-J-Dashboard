@@ -2,17 +2,23 @@ import { paths } from "./path";
 
 export const features = [
     {
+        name: "Onboarding",
+        icon: "pi pi-gauge",
+        description: "Handle purchase orders and supplier relationships.",
+        link: paths.ONBOARDING_SERVICE
+    },
+    {
         name: "Customer",
         icon: "pi pi-user",
         description: "Handle purchase orders and supplier relationships.",
         link: paths.CUSTOMER_LIST
     },
-    {
-        name: "Visa Services",
-        icon: "pi pi-book",
-        description: "Handle purchase orders and supplier relationships.",
-        link: paths.VISA_SERVICE_LIST
-    },
+    // {
+    //     name: "Visa Services",
+    //     icon: "pi pi-book",
+    //     description: "Handle purchase orders and supplier relationships.",
+    //     link: paths.VISA_SERVICE_LIST
+    // },
     {
         name: "Employer",
         icon: "pi pi-briefcase",

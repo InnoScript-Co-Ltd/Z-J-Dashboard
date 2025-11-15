@@ -2,59 +2,64 @@ import { paginateOptions } from "../../constants/settings";
 
 export const onboardingServicePayloads = {
     onboardingServiceCreateOrUpdate: {
+        customer_id: "",
+        customer_name: "",
         category_id: "",
+        category: "",
         category_service_id: "",
-        description: "",
+        service: "",
         fees: "",
+        deposit: "",
+        balance: "",
+        employer_type: "",
+        employer_id: "",
+        employer_name: "",
+        remark: "",
         status: ""
     },
 
-    categoryCreateOrUpdate: {
-        label: "",
-        description: "",
-        status: ""
-    },
-
-    yearOfInsurances: [
-        { code: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ ၁ နှစ်", name: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ ၁ နှစ်" , keyword: "PINK_CARD_ONE_YEAR_INSURANCE"},
-        { code: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ 6 လ", name: "ပန်းရောင်ကဒ် (ပါ) - အာမခံ 6 လ", keyword: "PINK_CARD_SIX_MONTHS_INSURANCE" },
-        { code: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ ၁ နှစ်", name: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ ၁ နှစ်", keyword: "NO_PINK_CARD_ONE_YEAR_INSURANCE" },
-        { code: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ 6 လ", name: "ပန်းရောင်ကဒ် (မပါ) - အာမခံ 6 လ", keyword: "NO_PINK_CARD_SIX_MONTHS_INSURANCE" },
+    customerContactByTypes: [
+        { code: "Tiktok", name: "Tiktok" },
+        { code: "Facebook", name: "Facebook" },
+        { code: "Instagram", name: "Instagram" },
+        { code: "WhatsApp", name: "WhatsApp" },
+        { code: "LinkedIn", name: "LinkedIn" },
+        { code: "Line", name: "Line" },
+        { code: "Telegram", name: "Telegram" },
+        { code: "Viber", name: "Viber" },
+        { code: "Phone", name: "Phone" },
+        { code: "Email", name: "Email" },
+        { code: "WalkIn", name: "Walk In" }
     ],
 
-    servicePaginateParams: {
+    status: [
+        { code: "DEPOSIT", name: "DEPOSIT"},
+        { code: "COMPLETED", name: "COMPLETED" },
+        { code: "CANCELED", name: "CANCELED" },
+        { code: "REFUND", name: "REFUND" }
+    ],
+
+    onboardingServicePaginateParams: {
         page: 1,
         rows: paginateOptions.rows,
-        columns: "id,service_type,fees,status",
+        columns: "id,customer_name,employer_name,service,category,employer_type,status",
         search: "",
         order:"id",
         sort: "DESC"
     },
 
-    categoryPaginateParams: {
-        page: 1,
-        rows: paginateOptions.rows,
-        columns: "id,label,description,status",
-        search: "",
-        order:"id",
-        sort: "DESC" 
-    },
-
-    serviceColumns: [
-        { field: "category", header: "Category", sortable: false, show: true },
-        { field: "service_type", header: "Service Type", sortable: true, show: true },
-        { field: "fees", header: "Fees", sortable: true, show: true },
-        { field: "description", header: "Description", sortable: true, show: true },
-        { field: "status", header: "Status", sortable: true, show: true },
-        { field: "created_at", header: "Created At", sortable: true, show: true },
-        { field: "updated_at", header: "Updated At", sortable: true, show: true },
+    onboardingServiceColumns: [
+        { field: "customer_name", header: "Customer", sortable: true, show: true, width: "250px" },
+        { field: "category", header: "Category", sortable: true, show: true, width: "250px" },
+        { field: "service", header: "Service", sortable: true, show: true, width: "250px" },
+        { field: "employer_name", header: "Employer", sortable: true, show: true, width: "250px" },
+        { field: "employer_type", header: "Employer Type", sortable: true, show: true, width: "200px" },
+        { field: "fees", header: "Service Fees", sortable: true, show: true, width: "200px" },
+        { field: "deposit", header: "Deposit", sortable: true, show: true, width: "200px" },
+        { field: "balance", header: "Balance", sortable: true, show: true, width: "200px" },
+        { field: "status", header: "Status", sortable: true, show: true, width: "100px" },
+        { field: "created_at", header: "Created At", sortable: true, show: true, width: "200px" },
+        { field: "updated_at", header: "Updated At", sortable: true, show: true, width: "200px" },
+        { field: "action", header: "Action", sortable: true, show: true, width: "100px" }
     ],
-
-    categoryColumns: [
-        { field: "label", header: "Label", sortable: true, show: true },
-        { field: "description", header: "Description", sortable: true, show: true },
-        { field: "status", header: "Status", sortable: true, show: true },
-        { field: "created_at", header: "Created At", sortable: true, show: true },
-        { field: "updated_at", header: "Updated At", sortable: true, show: true },
-    ]
 }

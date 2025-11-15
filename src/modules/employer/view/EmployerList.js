@@ -121,7 +121,7 @@ export const EmployerList = () => {
                                             setStatus(e.value);
                                             dispatch(setEmployerPaginate({
                                                 ...employerPaginateParams,
-                                                filter: "status",
+                                                filter: "employer_type",
                                                 value: e.value.code
                                             }));
                                         }}

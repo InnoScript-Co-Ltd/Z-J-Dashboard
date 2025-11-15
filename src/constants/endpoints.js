@@ -14,5 +14,7 @@ export const endpoints = {
   service: "services",
   categories: "categories",
   categoryService: "category-service",
-  employer: "employer"
+  employer: "employer",
+  download: "download",
+  onboarding: "onboarding-service"
 };

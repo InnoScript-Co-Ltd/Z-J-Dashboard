@@ -1,5 +1,5 @@
 import { endpoints } from "../../constants/endpoints";
-import { getRequest, postRequest, putRequest } from "../../utilities/api";
+import { formBuilderRequest, getRequest } from "../../utilities/api";
 import { employerIndex, employerUpdate } from "./employerSlice";
 
 export const employerServices = {
@@ -12,15 +12,15 @@ export const employerServices = {
     },
 
     employerServiceStore: async (dispatch, payload) => {
-        return await postRequest(endpoints.employer, payload, dispatch);
+        return await formBuilderRequest(endpoints.employer, payload, dispatch);
     },
 
     employerServiceUpdate: async (dispatch, payload, id) => {
-        return await putRequest(`${endpoints.employer}/${id}`, payload, dispatch);
+        return await formBuilderRequest(`${endpoints.employer}/${id}`, payload, dispatch);
     },
 
     employerServiceShow: async (dispatch, id) => {
-        const response = await getRequest(`${endpoints.employer}/${id}`, {}, dispatch);
+        const response = await getRequest(`${endpoints.employer}/${id}`, null, dispatch);
         if(response.status === 200) {
             dispatch(employerUpdate(response.data));
         }

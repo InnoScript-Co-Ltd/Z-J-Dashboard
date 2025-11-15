@@ -19,13 +19,15 @@ import { updateError } from "../../shareSlice";
 import { useParams } from "react-router-dom";
 import { Image } from "primereact/image";
 import { endpoints } from "../../../constants/endpoints";
+import { getRequest } from "../../../utilities/api";
+import { paths } from "../../../constants/path";
 
 export const UpdateEmployer = () => {
 
     const { employer, employerCreateOrUpdateFrom } = useSelector(state => state.employer);
     
     const [loading, setLoading] = useState(false);
-    const [payload, setPayload] = useState(employerCreateOrUpdateFrom ? employerCreateOrUpdateFrom : employerPayloads.employerCreateOrUpdate);
+    const [payload, setPayload] = useState(employerCreateOrUpdateFrom);
     const [totalSize, setTotalSize] = useState(0);
     const [isConfirm, setIsConfirm] = useState(false);
     const [nationalCardPhoto, setNationalCardPhoto] = useState("");
@@ -38,15 +40,25 @@ export const UpdateEmployer = () => {
     const fileUploadRef = useRef(null);
     const toast = useRef(null);
 
-    const createEmployerHandler = async () => {
+    const updateEmployerHandler = async () => {
         setLoading(true);
 
         let updatePayload = { ...payload};
 
         updatePayload.employer_type = updatePayload.employer_type.code;
-        const createEmployerResponse = await employerServices.employerServiceStore(dispatch, updatePayload);
+        updatePayload.national_card_photo = payload.national_card_photo === "" ? null : payload.national_card_photo;
+        updatePayload.household_photo = payload.household_photo === "" ? null : payload.household_photo;
+        
+        if(updatePayload.employer_type === "COMPANY") {
+            updatePayload.update_documents = companyDocuments && companyDocuments.length > 0 ? companyDocuments.toString() : null;
+        }
+        
+        console.log(updatePayload);
+        
+        const updateEmployerResponse = await employerServices.employerServiceUpdate(dispatch, updatePayload, params.id);
 
-        if(createEmployerResponse.status === 200) {
+        if(updateEmployerResponse.status === 200) {
+            // await employerServices.employerServiceShow(dispatch, params.id);
             dispatch(updateError(null));
             setIsConfirm(false);
         }
@@ -54,8 +66,10 @@ export const UpdateEmployer = () => {
         setLoading(false);
     }
 
-    const downlaodFileHandler = async () => {
-
+    const downlaodFileHandler = async (fileName) => {
+        setLoading(true);
+        const response = await getRequest(`${paths.DOWNLOAD}/${fileName}`, null, dispatch);
+        setLoading(false);
     }
 
     const init = useCallback(async () => {
@@ -74,7 +88,7 @@ export const UpdateEmployer = () => {
             updatePayload.employer_type = employerPayloads.employerType.filter(value => value.code === employer.employer_type)[0];
             updatePayload.national_card_photo = "";
             updatePayload.household_photo = "";
-            updatePayload.company_documents = "";
+            updatePayload.company_documents = [];
 
             setCompanyDocuments(employer.company_documents);
             setPayload(updatePayload);
@@ -273,6 +287,65 @@ export const UpdateEmployer = () => {
                                 <ValidationMessage field="remark" />
                             </div>
 
+                            {employer && employer.employer_type === "COMPANY" && (
+                                <div className="flex flex-row align-items-center justify-content-start m-3" style={{width: "10rem"}}>
+                                    { (companyDocuments && companyDocuments.length > 0) && companyDocuments.map((value, index) => {
+                                        const extension = value.split(".");
+                                        return (
+                                            <div
+                                                className="mr-3 w-full"
+                                                key={`${employer.code}_company_documents_id_${index}`}
+                                            >
+                                                <div className="w-full flex flex-column justify-content-center align-items-center">
+                                                { extension[1] === "pdf" && (
+                                                    <i className="pi pi-file-pdf" style={{fontSize: "5rem"}}></i>
+                                                )}
+
+
+                                                { (extension[1] === "png" || extension[1] === 'jpeg' || extension[1] === 'gif' || extension[1] === 'jpg') && (
+                                                    <i className="pi pi-image" style={{fontSize: "5rem"}}></i>
+                                                )}
+
+                                                { (extension[1] === 'xls' || extension[1] === 'xlsx') && (
+                                                    <i className="pi pi-file-excel" style={{fontSize: "5rem"}}></i>
+                                                )}
+                                                
+                                                { (extension[1] === 'doc' || extension[1] === 'docx') && (
+                                                    <i className="pi pi-file-word" style={{fontSize: "5rem"}}></i>
+                                                )}
+                                                
+                                                <div className="w-full overflow-auto mt-3">
+                                                    <span className="white-space-nowrap mt-3" style={{fontSize: "small"}}> {value} </span>
+                                                </div>
+
+                                                <Button
+                                                    className="mt-3 w-full"
+                                                    outlined
+                                                    size="small"
+                                                    label="DOWNLOAD"
+                                                    icon="pi pi-download"
+                                                    onClick={() => downlaodFileHandler(value)}
+                                                />
+
+                                                <Button
+                                                    className="mt-2 w-full"
+                                                    outlined
+                                                    size="small"
+                                                    severity="danger"
+                                                    label="REMOVE"
+                                                    icon="pi pi-trash"
+                                                    onClick={() => {
+                                                        let updateDocuments = companyDocuments.filter(file => file !== value);
+                                                        setCompanyDocuments(updateDocuments);
+                                                    }}
+                                                />
+                                                </div>
+                                            </div>
+                                        )
+                                    })}
+                                </div>
+                            )}
+
                             {payload.employer_type.code === "COMPANY" && (
                                 <div className="col-12 md:col-12 mt-3">
                                     <Toast ref={toast}></Toast>
@@ -298,73 +371,15 @@ export const UpdateEmployer = () => {
                             <div className="col-12 md:col-12 mt-3">
                                 <Button 
                                     size="small"
-                                    label="CREATE"
+                                    label="UPDATE"
                                     disabled={loading}
                                     loading={loading}
                                     onClick={() => {
-                                        createEmployerHandler()
+                                        updateEmployerHandler()
                                     }}
                                 />
                             </div>
                         </div>
-
-                        {employer && employer.employer_type === "COMPANY" && (
-                            <div className="flex flex-row align-items-center justify-content-start mt-3" style={{width: "10rem"}}>
-                                { companyDocuments.map((value, index) => {
-                                    const extension = value.split(".");
-                                    return (
-                                        <div
-                                            className="mr-3 w-full"
-                                            key={`${employer.code}_company_documents_id_${index}`}
-                                        >
-                                            <div className="w-full flex flex-column justify-content-center align-items-center">
-
-                                            { extension[1] === "pdf" && (
-                                                <i className="pi pi-file-pdf" style={{fontSize: "5rem"}}></i>
-                                            )}
-
-
-                                            { (extension[1] === "png" || extension[1] === 'jpeg' || extension[1] === 'gif' || extension[1] === 'jpg') && (
-                                                <i className="pi pi-image" style={{fontSize: "5rem"}}></i>
-                                            )}
-
-                                            { (extension[1] === 'xls' || extension[1] === 'xlsx') && (
-                                                <i className="pi pi-file-excel" style={{fontSize: "5rem"}}></i>
-                                            )}
-                                            
-                                            { (extension[1] === 'doc' || extension[1] === 'docx') && (
-                                                <i className="pi pi-file-word" style={{fontSize: "5rem"}}></i>
-                                            )}
-
-                                            <span className="mt-3" style={{fontSize: "small"}}> {value} </span>
-                                            
-                                            <Button
-                                                className="mt-3 w-full"
-                                                outlined
-                                                size="small"
-                                                label="DOWNLOAD"
-                                                icon="pi pi-download"
-                                                onClick={() => downlaodFileHandler(value)}
-                                            />
-
-                                            <Button
-                                                className="mt-3 w-full"
-                                                outlined
-                                                size="small"
-                                                severity="danger"
-                                                label="REMOVE"
-                                                icon="pi pi-trash"
-                                                onClick={() => {
-                                                    let updateDocuments = companyDocuments.filter(file => file !== value);
-                                                    setCompanyDocuments(updateDocuments);
-                                                }}
-                                            />
-                                            </div>
-                                        </div>
-                                    )
-                                })}
-                            </div>
-                        )}
                     </Card>
                 </div>
             </div>

@@ -7,7 +7,7 @@ export const employerPayloads = {
         household_photo: "", 
         national_card_photo: "", 
         employer_type: "", 
-        company_documents: ""
+        company_documents: []
     },
 
     employerType: [

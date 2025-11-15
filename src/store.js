@@ -7,6 +7,7 @@ import settingSlice from "./modules/setting/settingSlice";
 import categorySlice from "./modules/categories/categorySlice";
 import categoryServiceSlice from "./modules/categoryService/categoryServiceSlice";
 import employerSlice from "./modules/employer/employerSlice";
+import onboardingSlice from "./modules/onboardingService/onboardingServiceSlice";
 
 export const store = configureStore({
     reducer: {
@@ -17,6 +18,7 @@ export const store = configureStore({
         setting: settingSlice,
         category: categorySlice,
         categoryService: categoryServiceSlice,
-        employer: employerSlice
+        employer: employerSlice,
+        onboarding: onboardingSlice
     },
 });

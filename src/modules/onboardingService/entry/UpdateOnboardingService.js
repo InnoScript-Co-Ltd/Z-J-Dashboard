@@ -3,121 +3,104 @@ import { HeaderBar } from "../../../components/HeaderBar";
 import { BackButton } from "../../../components/BackButton";
 import { Card } from "primereact/card";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { onboardingServicePayloads } from "../onboardingServicePayloads";
-import { useDispatch } from "react-redux";
-import { customerServices } from "../../customer/customerService";
-import { categoryServices } from "../../categories/categoryServices";
-import { categoryServiceServices } from "../../categoryService/categoryServiceServices";
+import { useDispatch, useSelector } from "react-redux";
+import { categoryServices as _categoryServices } from "../../categories/categoryServices";
 import { Dropdown } from "primereact/dropdown";
 import { payloadHandler } from "../../../utilities/handlers";
 import { ValidationMessage } from "../../../components/ValidationMessage";
 import { Button } from "primereact/button";
-import { InputText } from "primereact/inputtext";
 import { employerServices } from "../../employer/employerServices";
-import { employerPayloads } from "../../employer/employerPayloads";
 import { onboardingServiceServices } from "../onboardingServiceServices";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { paths } from "../../../constants/path";
+import { categoryServiceServices } from "../../categoryService/categoryServiceServices";
+import { InputText } from "primereact/inputtext";
 
-export const CreateOnboardingService = () => {
+export const UpdateOnboardingService = () => {
 
+    const { onboarding } = useSelector(state => state);
+    const { onboardingService, setOnboardingServiceCreateOrUpdateFrom, onboardingServiceCreateOrUpdateForm } = onboarding;
+    const [payload, setPayload] = useState(onboardingServiceCreateOrUpdateForm);
     const [loading, setLoading] = useState(false);
-    const [payload, setPayload] = useState(onboardingServicePayloads.onboardingServiceCreateOrUpdate);
     const [isConfirm, setIsConfirm] = useState(true);
+    const [categories, setCategories] = useState([]);
+    const [services, setServices] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
+    const params = useParams();
 
-    const categories = useRef([]);
-    const serviceLists = useRef([]);
-    const employers = useRef([]);
-    const customer = useRef([]);
-
-    const onCategoryChangeHandler = async (e) => {
+    const onLoadingCategoryService = useCallback(async (id) => {
         setLoading(true);
-        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {
-            filter: "category_id,status",
-            value: e.code + ",ACTIVE",
-        });
+        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "status,category_id", value: `ACTIVE,${id}`});
 
         if(categoryServiceResponse.status === 200) {
-            serviceLists.current = categoryServiceResponse.data.map((value) => {
-                return {
-                    code: value.id,
-                    name: value.name,
-                    description: value.description,
-                    fees: value.fees
-                }
-            })
-        }
-        setLoading(false);
-    }
-
-    const onChangeEmployerType = async (e) => {
-        setLoading(true);
-        const employerResponse = await employerServices.employerServiceIndex(dispatch, { filter: "employer_type", value: e });
-        if(employerResponse.status === 200) {
-            employers.current = employerResponse.data.map((value) => {
-                return {
-                    code: value.id,
-                    name: value.full_name
-                }
-            })
-        }
-        setLoading(false);
-    }
-
-    const addServiceHandler = async () => {
-        setLoading(true);
-        let updatePayload = {...payload};
-        updatePayload.customer_id = payload.customer_id.code;
-        updatePayload.category_id = payload.category_id.code;
-        updatePayload.category_service_id = payload.category_service_id.code;
-        updatePayload.employer_id = payload.employer_id.code;
-        updatePayload.employer_type = payload.employer_type.code;
-        updatePayload.status = payload.status.code;
-
-
-        const onboardingServiceResponse = await onboardingServiceServices.onboardingServiceStore(dispatch, updatePayload);
-
-        if(onboardingServiceResponse.status === 200) {
-            setIsConfirm(false);
-        }
-        setLoading(false);
-    }
-
-    const init = useCallback(async () => {
-        setLoading(true);
-
-        const customerResponse = await customerServices.customerIndex(dispatch, null);
-
-        if(customerResponse.status === 200) {
-            customer.current = customerResponse.data.map((value) => {
-                return {
-                    code: value.id,
-                    name: value.name
-                }
-            })
-        }
-
-        const categoryResponse = await categoryServices.categoryIndex(dispatch, { filter: "status", value: "ACTIVE"});
-
-        if(categoryResponse.status === 200) {
-            categories.current = categoryResponse.data.map((value) => {
-                return {
-                    code: value.id,
-                    name: value.label,
-                    description: value.description
-                }
-            });
+            setServices(
+                categoryServiceResponse.data.map((value) => {
+                    return {
+                        code: value.id,
+                        name: value.name,
+                        description: value.description
+                    }
+                })
+            )
         }
 
         setLoading(false);
     }, [dispatch]);
 
+    const init = useCallback(async () => {
+        setLoading(true);
+        await onboardingServiceServices.onboardingServiceShow(dispatch, params.id);
+        setLoading(false);
+    }, [dispatch, params]);
+
+
+    const mount = useCallback(async () => {
+        if(!onboardingService) return;
+
+        let updatePayload = {...onboardingService};
+        let categoriesResult = [];
+        let serviceResult = [];
+
+        const categoryResponse = await _categoryServices.categoryIndex(dispatch, {filter: "status", value: "ACTIVE"});
+
+        if(categoryResponse.status === 200) {
+            categoriesResult = categoryResponse.data.map(value => ({
+                code: value.id,
+                name: value.label,
+                description: value.description
+            }))
+        }
+
+        setCategories(categoriesResult);
+
+        updatePayload.category_id = categoriesResult.find(value => value.code === onboardingService.category_id);
+
+        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "status,category_id", value: `ACTIVE,${updatePayload.category_id.code}`});
+
+        if(categoryServiceResponse.status === 200) {
+            serviceResult = categoryServiceResponse.data.map(value => ({
+                code: value.id,
+                name: value.name,
+                description: value.description
+            }));
+        }
+
+        setServices(serviceResult);
+
+        updatePayload.category_service_id = serviceResult.find(value => value.code === onboardingService.category_service_id);
+
+        setPayload(updatePayload);
+    }, [onboardingService]);
+
     useEffect(() => {
         init();
     }, [init]);
+
+    useEffect(() => {
+        mount();
+    }, [mount]);
 
     return(
         <>
@@ -162,75 +145,55 @@ export const CreateOnboardingService = () => {
 
                 <Card 
                     className="mt-3"
-                    title="Add Service On Customer"
+                    title="Edit Customer Service"
                 >
                     <div className="grid">
-                                <div className="col-3 md:col-3 mt-3">
-                                    <div className="w-full">
-                                        <label> Choose Customer (Required) </label>
-                                        <Dropdown
-                                            className="w-full mt-1"
-                                            placeholder="Choose Customer"
-                                            options={customer.current}
-                                            value={payload.customer_id}
-                                            optionLabel="name"
-                                            disabled={loading}
-                                            filter
-                                            onChange={(e) => payloadHandler(payload, e.value, "customer_id", (updatePayload) => {
-                                                updatePayload.customer_name = e.value.name;
-                                                setPayload(updatePayload);
-                                            })}
-                                        />
-                                    </div>
-                                    <ValidationMessage field="customer_id" />
-                                </div>
+                        <div className="col-3 md:col-3 mt-3">
+                            <div className="w-full">
+                                <label> Choose Category </label>
+                                <Dropdown
+                                    className="w-full mt-1"
+                                    placeholder="Choose Category"
+                                    options={categories.length > 0 ? categories : []}
+                                    value={payload.category_id}
+                                    optionLabel="name"
+                                    disabled={loading}
+                                    onChange={(e) => payloadHandler(payload, e.value, "category_id", (updatePayload) => {
+                                        updatePayload.category = e.value.name;
+                                        //onLoadServices(e.value.code);
+                                        setPayload(updatePayload);
+                                    })}
+                                />
+                                <small id="username-help" className="w-full"> { payload.category_id.description}</small>
+                            </div>
+                            <ValidationMessage field="category_id" />
+                        </div>
 
-                                <div className="col-3 md:col-3 mt-3">
+                        <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
-                                        <label> Choose Service Category (Required) </label>
-                                        <Dropdown
-                                            className="w-full mt-1"
-                                            placeholder="Choose Service Category"
-                                            options={categories.current}
-                                            value={payload.category_id}
-                                            optionLabel="name"
-                                            disabled={loading}
-                                            onChange={(e) => payloadHandler(payload, e.value, "category_id", (updatePayload) => {
-                                                updatePayload.category = e.value.name;
-                                                onCategoryChangeHandler(e.value)
-                                                setPayload(updatePayload);
-                                            })}
-                                        />
-                                        <small id="username-help" className="w-full"> {payload.category_id.description}</small>
-                                    </div>
-                                    <ValidationMessage field="category_id" />
-                                </div>
-
-                                <div className="col-3 md:col-3 mt-3">
-                                    <div className="w-full">
-                                        <label> Choose Service (Required) </label>
+                                        <label> Choose Service </label>
                                         <Dropdown 
                                             className="w-full mt-1"
                                             placeholder="Choose Service"
-                                            options={serviceLists.current}
+                                            options={services.length > 0 ? services : []}
                                             value={payload.category_service_id}
                                             optionLabel="name"
-                                            disabled={loading || serviceLists.current.length === 0 ? true : false}
+                                            disabled={loading}
                                             onChange={(e) => payloadHandler(payload, e.value, "category_service_id", (updatePayload) => {
                                                 updatePayload.service = e.value.name;
                                                 updatePayload.fees = e.value.fees;
                                                 setPayload(updatePayload);
                                             })}
                                         />
-                                        <small id="username-help" className="w-full"> {payload.category_service_id.description}</small>
+                                        <small id="username-help" className="w-full"> {payload?.category_service_id?.description}</small>
                                     </div>
                                     
                                     <ValidationMessage field="category_service_id" />
-                                </div>
+                        </div>    
 
-                                <div className="col-3 md:col-3 mt-3">
+                        <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
-                                        <label> Service Fees (Required) </label>
+                                        <label> Service Fees </label>
                                         <InputText 
                                             className="w-full mt-1"
                                             value={payload.fees}
@@ -241,9 +204,9 @@ export const CreateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="fees" />
-                                </div>
+                        </div>   
 
-                                <div className="col-3 md:col-3 mt-3">
+                        <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
                                         <label> Deposit Amount (Optional) </label>
                                         <InputText 
@@ -257,7 +220,12 @@ export const CreateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="deposit" />
-                                </div>
+                                </div>                       
+
+{/* 
+                                
+
+                                
 
                                 <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
@@ -347,7 +315,7 @@ export const CreateOnboardingService = () => {
                                 <div className="col-12 md:col-12 mt-3">
                                     <Button 
                                         outlined
-                                        severity="success"
+                                        severity="warning"
                                         size="small"
                                         label="SUBMIT"
                                         disabled={loading}
@@ -355,7 +323,7 @@ export const CreateOnboardingService = () => {
                                         icon="pi pi-save"
                                         onClick={() => addServiceHandler()}
                                     />
-                                </div>
+                                </div> */}
                     </div>
                 </Card>
             </div>
