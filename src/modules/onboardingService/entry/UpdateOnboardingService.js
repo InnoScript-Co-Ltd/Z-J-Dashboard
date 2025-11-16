@@ -2,7 +2,7 @@ import { ConfirmDialog } from "primereact/confirmdialog";
 import { HeaderBar } from "../../../components/HeaderBar";
 import { BackButton } from "../../../components/BackButton";
 import { Card } from "primereact/card";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { categoryServices as _categoryServices } from "../../categories/categoryServices";
 import { Dropdown } from "primereact/dropdown";
@@ -15,32 +15,37 @@ import { useNavigate, useParams } from "react-router-dom";
 import { paths } from "../../../constants/path";
 import { categoryServiceServices } from "../../categoryService/categoryServiceServices";
 import { InputText } from "primereact/inputtext";
+import { employerPayloads } from "../../employer/employerPayloads";
+import { onboardingServicePayloads } from "../onboardingServicePayloads";
+import { updateError } from "../../shareSlice";
 
 export const UpdateOnboardingService = () => {
 
     const { onboarding } = useSelector(state => state);
-    const { onboardingService, setOnboardingServiceCreateOrUpdateFrom, onboardingServiceCreateOrUpdateForm } = onboarding;
+    const { onboardingService, onboardingServiceCreateOrUpdateForm } = onboarding;
     const [payload, setPayload] = useState(onboardingServiceCreateOrUpdateForm);
     const [loading, setLoading] = useState(false);
     const [isConfirm, setIsConfirm] = useState(true);
     const [categories, setCategories] = useState([]);
     const [services, setServices] = useState([]);
+    const [employers, setEmployer] = useState([]);
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
     const params = useParams();
 
-    const onLoadingCategoryService = useCallback(async (id) => {
+    const onChangeCategoryHandler = useCallback(async (id) => {
         setLoading(true);
-        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "status,category_id", value: `ACTIVE,${id}`});
+        const categoryResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "category_id", value: id});
 
-        if(categoryServiceResponse.status === 200) {
+        if(categoryResponse.status === 200) {
             setServices(
-                categoryServiceResponse.data.map((value) => {
+                categoryResponse.data.map((value) => {
                     return {
                         code: value.id,
                         name: value.name,
-                        description: value.description
+                        description: value.description,
+                        fees: value.fees
                     }
                 })
             )
@@ -48,6 +53,45 @@ export const UpdateOnboardingService = () => {
 
         setLoading(false);
     }, [dispatch]);
+
+
+    const onChangeEmployerType = async (id) => {
+        setLoading(true);
+        const employerResponse = await employerServices.employerServiceIndex(dispatch, {filter: "employer_type", value: id});
+        if(employerResponse.status === 200) {
+            setEmployer(
+                employerResponse.data.map((value) => {
+                    return {
+                        code: value.id,
+                        name: value.full_name,
+                    }
+                })
+            )
+        }
+
+        setLoading(false);
+    }
+
+    const updateServiceHandler = async () => {
+        setLoading(true);
+
+        let updatePayload = {...payload};
+        updatePayload.customer_id = payload.customer_id.code;
+        updatePayload.category_id = payload.category_id.code;
+        updatePayload.category_service_id = payload.category_service_id.code;
+        updatePayload.employer_id = payload.employer_id.code;
+        updatePayload.employer_type = payload.employer_type.code;
+        updatePayload.status = payload.status.code;
+
+        const updateResponse = await onboardingServiceServices.onboardingServiceUpdate(dispatch, updatePayload);
+
+        if(updateResponse.status === 200) {
+            dispatch(updateError(null));
+            setIsConfirm(false);
+        }
+
+        setLoading(false);
+    }
 
     const init = useCallback(async () => {
         setLoading(true);
@@ -62,6 +106,7 @@ export const UpdateOnboardingService = () => {
         let updatePayload = {...onboardingService};
         let categoriesResult = [];
         let serviceResult = [];
+        let employerResult = [];
 
         const categoryResponse = await _categoryServices.categoryIndex(dispatch, {filter: "status", value: "ACTIVE"});
 
@@ -77,26 +122,42 @@ export const UpdateOnboardingService = () => {
 
         updatePayload.category_id = categoriesResult.find(value => value.code === onboardingService.category_id);
 
-        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "status,category_id", value: `ACTIVE,${updatePayload.category_id.code}`});
+        const categoryServiceResponse = await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "category_id", value: updatePayload.category_id.code});
 
         if(categoryServiceResponse.status === 200) {
             serviceResult = categoryServiceResponse.data.map(value => ({
                 code: value.id,
                 name: value.name,
-                description: value.description
+                description: value.description,
+                fees: value.fees
             }));
         }
 
         setServices(serviceResult);
 
         updatePayload.category_service_id = serviceResult.find(value => value.code === onboardingService.category_service_id);
+        updatePayload.employer_type = employerPayloads.employerType.find(value => value.code === onboardingService.employer_type);
+
+        const employerResponse = await employerServices.employerServiceIndex(dispatch, {filter: "employer_type", value: updatePayload.employer_type.code});
+
+        if(employerResponse.status === 200) {
+            employerResult = employerResponse.data.map(value => ({
+                code: value.id,
+                name: value.full_name,
+            }));
+        }
+
+        setEmployer(employerResult);
+
+        updatePayload.employer_id = employerResult.find(value => value.code === onboardingService.employer_id);
+        updatePayload.status = onboardingServicePayloads.status.find(value => value.code === onboardingService.status);
 
         setPayload(updatePayload);
-    }, [onboardingService]);
+    }, [dispatch, onboardingService]);
 
     useEffect(() => {
         init();
-    }, [init]);
+    }, [init, dispatch]);
 
     useEffect(() => {
         mount();
@@ -159,9 +220,14 @@ export const UpdateOnboardingService = () => {
                                     optionLabel="name"
                                     disabled={loading}
                                     onChange={(e) => payloadHandler(payload, e.value, "category_id", (updatePayload) => {
+                                        onChangeCategoryHandler(e.value.code);
+
                                         updatePayload.category = e.value.name;
-                                        //onLoadServices(e.value.code);
-                                        setPayload(updatePayload);
+                                        updatePayload.category_service_id = "";
+                                        updatePayload.category = "";
+                                        updatePayload.fees = 0;
+                                        updatePayload.balance = updatePayload.deposit;
+                                        setPayload(updatePayload);                             
                                     })}
                                 />
                                 <small id="username-help" className="w-full"> { payload.category_id.description}</small>
@@ -182,10 +248,11 @@ export const UpdateOnboardingService = () => {
                                             onChange={(e) => payloadHandler(payload, e.value, "category_service_id", (updatePayload) => {
                                                 updatePayload.service = e.value.name;
                                                 updatePayload.fees = e.value.fees;
+                                                updatePayload.balance = e.value.fees - payload.deposit;
                                                 setPayload(updatePayload);
                                             })}
                                         />
-                                        <small id="username-help" className="w-full"> {payload?.category_service_id?.description}</small>
+                                        <small id="username-help" className="w-full"> {payload.category_service_id.description}</small>
                                     </div>
                                     
                                     <ValidationMessage field="category_service_id" />
@@ -220,12 +287,7 @@ export const UpdateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="deposit" />
-                                </div>                       
-
-{/* 
-                                
-
-                                
+                                </div>   
 
                                 <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
@@ -237,18 +299,18 @@ export const UpdateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="balance" />
-                                </div>
+                                </div>     
 
                                 <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
-                                        <label> Choose Employer Type (Required) </label>
+                                        <label> Choose Employer Type </label>
                                         <Dropdown 
                                             className="w-full mt-1"
                                             placeholder="Choose Employer Type"
                                             options={employerPayloads.employerType}
                                             value={payload.employer_type}
                                             optionLabel="name"
-                                            disabled={loading || serviceLists.current.length === 0 ? true : false}
+                                            disabled={loading}
                                             onChange={(e) => payloadHandler(payload, e.value, "employer_type", (updatePayload) => {
                                                 onChangeEmployerType(e.value.code);
                                                 setPayload(updatePayload);
@@ -256,19 +318,20 @@ export const UpdateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="employer_type" />
-                                </div>
+                                </div>     
+
 
                                 <div className="col-3 md:col-3 mt-3">
                                     <div className="w-full">
-                                        <label> Choose Employer (Required) </label>
+                                        <label> Choose Employer </label>
                                         <Dropdown 
                                             className="w-full mt-1"
                                             placeholder="Choose Employer"
-                                            options={employers.current}
+                                            options={employers}
                                             value={payload.employer_id}
                                             optionLabel="name"
                                             filter
-                                            disabled={loading || employers.current.length === 0 ? true : false}
+                                            disabled={loading}
                                             onChange={(e) => payloadHandler(payload, e.value, "employer_id", (updatePayload) => {
                                                 console.log(e.value);
                                                 updatePayload.employer_name = e.value.name;
@@ -277,11 +340,11 @@ export const UpdateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="employer_id" />
-                                </div>
+                                </div>   
 
                                 <div className="col-12 md:col-3 mt-3">
                                     <div className="w-full">
-                                        <label> Status (Required) </label>
+                                        <label> Status </label>
                                         <Dropdown
                                             className="w-full mt-1"
                                             placeholder="Choose Status"
@@ -296,9 +359,10 @@ export const UpdateOnboardingService = () => {
                                     <ValidationMessage field="status" />
                                 </div>
 
-                                <div className="col-12 md:col-9 mt-3">
+                                
+                                <div className="col-12 md:col-12 mt-3">
                                     <div className="w-full">
-                                        <label> Remark (Optional) </label>
+                                        <label> Remark </label>
                                         <InputText 
                                             className="w-full mt-1"
                                             placeholder="Enter Remark"
@@ -310,7 +374,7 @@ export const UpdateOnboardingService = () => {
                                         />
                                     </div>
                                     <ValidationMessage field="remark" />
-                                </div>
+                                </div>       
 
                                 <div className="col-12 md:col-12 mt-3">
                                     <Button 
@@ -321,9 +385,9 @@ export const UpdateOnboardingService = () => {
                                         disabled={loading}
                                         loading={loading}
                                         icon="pi pi-save"
-                                        onClick={() => addServiceHandler()}
+                                        onClick={() => updateServiceHandler()}
                                     />
-                                </div> */}
+                                </div> 
                     </div>
                 </Card>
             </div>

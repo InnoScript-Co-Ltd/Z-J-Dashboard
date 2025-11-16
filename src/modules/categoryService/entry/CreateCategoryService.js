@@ -54,7 +54,7 @@ export const CreateCategoryService = () => {
         }
 
         setLoading(false);
-    }, []);
+    }, [dispatch]);
 
     useEffect(() => {
         init();

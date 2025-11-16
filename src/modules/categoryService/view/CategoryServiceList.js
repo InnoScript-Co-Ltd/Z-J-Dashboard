@@ -149,7 +149,7 @@ export const CategoryServiceList = () => {
                                 value={categoryId}
                                 optionLabel="name"
                                 onChange={(e) => {
-                                    setStatus(e.value);
+                                    setCategoryId(e.value);
                                     onFilter("category_id", e.value.code)
                                 }}
                             />

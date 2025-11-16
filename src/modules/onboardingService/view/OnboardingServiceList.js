@@ -136,7 +136,7 @@ export const OnboardingServiceList = () => {
         await categoryServiceServices.categoryServiceIndex(dispatch, {filter: "status", value: "ACTIVE"});
         await serviceCategory.categoryIndex(dispatch, {filter: "status", value: "ACTIVE" });
         setLoading(false);
-    }, [useCallback]);
+    }, [dispatch]);
 
 
     useEffect(() => {

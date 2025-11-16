@@ -302,7 +302,6 @@ export const CreateOnboardingService = () => {
                                             filter
                                             disabled={loading || employers.current.length === 0 ? true : false}
                                             onChange={(e) => payloadHandler(payload, e.value, "employer_id", (updatePayload) => {
-                                                console.log(e.value);
                                                 updatePayload.employer_name = e.value.name;
                                                 setPayload(updatePayload);
                                             })}
